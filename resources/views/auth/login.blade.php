@@ -94,12 +94,13 @@
                 </div>
             </form>
 
-            <p class="mb-1">
+            {{-- <p class="mb-1">
                 <a href="{{ route('password.request') }}">@lang('auth.login.forgot_password')</a>
-            </p>
-            <p class="mb-0">
+            </p> --}}
+
+            {{-- <p class="mb-0">
                 <a href="{{ route('register') }}" class="text-center">@lang('auth.login.register_membership')</a>
-            </p>
+            </p> --}}
         </div>
         <!-- /.login-card-body -->
     </div>

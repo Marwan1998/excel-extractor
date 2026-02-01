@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.5",
         "laravel/ui": "^3.0",
         "laravelcollective/html": "^6.2",
+        "phpoffice/phpspreadsheet": "^1.30",
         "yajra/laravel-datatables-buttons": "^4.0",
         "yajra/laravel-datatables-html": "^4.0",
         "yajra/laravel-datatables-oracle": "^9.0"

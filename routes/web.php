@@ -25,3 +25,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('users', App\Http\Controllers\UserController::class);
 });
+
+
+Route::get('/test-excel', [\App\Http\Controllers\WellExcelController::class, 'test']);
+
+

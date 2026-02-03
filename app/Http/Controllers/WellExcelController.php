@@ -270,11 +270,11 @@ class WellExcelController extends Controller
                 $sheet->setCellValue("H{$startRow}", $spudDate ?? '');
                 $sheet->getStyle("H{$startRow}")->getNumberFormat()->setFormatCode('mm/dd/yyyy');  
 
-                $sheet->setCellValue("I{$startRow}", $targetDepth ?? '');
-                $sheet->setCellValue("J{$startRow}", $dailyFootage ?? '');
-                $sheet->setCellValue("K{$startRow}", $currentDepth ?? '');
-                $sheet->setCellValue("L{$startRow}", $record['BUDGET'] ?? '');
-                $sheet->setCellValue("M{$startRow}", $cumCost ?? '');
+                $sheet->setCellValue("I{$startRow}", $targetDepth ?? 0);
+                $sheet->setCellValue("J{$startRow}", $dailyFootage ?? 0);
+                $sheet->setCellValue("K{$startRow}", $currentDepth ?? 0);
+                $sheet->setCellValue("L{$startRow}", $record['BUDGET'] ?? 0);
+                $sheet->setCellValue("M{$startRow}", $cumCost ?? 0);
 
                 $sheet->setCellValue("N{$startRow}", $record['24 HRS - SUMMARY'] ?? '');
 

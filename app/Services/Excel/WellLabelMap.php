@@ -25,6 +25,8 @@ return [
         'CONTR/RIG NO',
         'DAILY FOOTAGE',
         'SPUD IN DATE',
+        '24 HRS - SUMMARY', // i have added this;
+        'BUDGET',
     ],
 
     /*
@@ -35,5 +37,12 @@ return [
     'COLUMN_INLINE' => [
         'CUM COST',
     ],
+
+
+    'record_terminators' => [
+        'RIG SUPERVISOR',
+        'FORECAST',
+    ],
+
 
 ];

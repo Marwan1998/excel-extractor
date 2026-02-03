@@ -10,6 +10,7 @@ class WellExcelExtractor
     protected array $inlineTextRules;
     protected array $standaloneKeys;
     protected array $columnInlineKeys;
+    protected array $recordTerminators;
 
     public function __construct()
     {
@@ -18,6 +19,8 @@ class WellExcelExtractor
         $this->inlineTextRules  = $map['INLINE_TEXT'];
         $this->standaloneKeys  = $map['STANDALONE'];
         $this->columnInlineKeys = $map['COLUMN_INLINE'];
+        $this->recordTerminators = $map['record_terminators'] ?? [];
+
     }
 
     public function extract(string $filePath): array
@@ -40,6 +43,27 @@ class WellExcelExtractor
                 if ($raw === '') {
                     continue;
                 }
+
+
+                // ✅ TERMINATION BLOCK
+                $upperRaw = strtoupper(rtrim($raw, ':'));
+
+                if (in_array($upperRaw, $this->recordTerminators, true)) {
+
+                    // ✅ End current record safely
+                    if (!empty($current)) {
+                        $results[] = $current;
+                    }
+
+                    // 🔄 Reset all state
+                    $current = [];
+                    $expecting = null;
+                    $columnWatch = [];
+
+                    // ⛔ Do NOT treat this cell as data
+                    continue;
+                }
+
 
                 /*
                 |--------------------------------------------------------------------------
@@ -143,4 +167,5 @@ class WellExcelExtractor
 
         return $results;
     }
+
 }

@@ -45,4 +45,34 @@ return [
     ],
 
 
+
+    'row_key_map' => [
+        'WELL' => 'WELL NAME',// will contains both of the well name and the field name
+        'البئر' => 'WELL NAME',
+
+        'RIG' => 'CONTR/RIG NO',
+        'الحفارة'  => 'CONTR/RIG NO',
+
+        'DAY' => 'Days Running',
+        'يـوم' => 'Days Running',
+
+        'PROG' => 'DAILY FOOTAGE',
+        'إنجاز' => 'DAILY FOOTAGE',
+
+        'PD' => 'CURRENT DEPTH',
+        'العمق الحالي' => 'CURRENT DEPTH',
+        
+        'TD' => 'TD/TARGET',
+        'العمق الكلي' => 'TD/TARGET',
+
+        'SUMMARY' => 'SUMMARY',// the long text in the middle
+
+        'CUM.COST' => 'CUM COST',
+        'التكلفة التراكمية' => 'CUM COST',
+    ],
+
+
+
+
+
 ];

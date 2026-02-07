@@ -140,18 +140,27 @@ class WellExcelController extends Controller
 
         ];
 
-        // $allData = [];
-        // foreach ($fileNames as $value) {
-        //     $filePath = storage_path($value['name']);
-        //     $extractor = new WellExcelExtractor();
-        //     $data = $extractor->extract($filePath);
+        
+        $fileNames =[
+            [
+                'name' => 'app/waha-report-1-1-2026.xlsx',
+                'date' => '01/01/2026',
+                'number' => '366',
+            ]
+        ];
 
-        //     array_push($allData, [count($data) => $data]);
+        $allData = [];
+        foreach ($fileNames as $value) {
+            $filePath = storage_path($value['name']);
+            $extractor = new WellExcelExtractor();
+            $data = $extractor->extract($filePath);
+
+            array_push($allData, [count($data) => $data]);
             
-        //     \Log::debug('Data', [$value['name'] => count($data)]);
-        // }
+            \Log::debug('Data', [$value['name'] => count($data)]);
+        }
 
-        // return $allData;
+        return $allData;
 
 
 

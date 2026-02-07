@@ -29,4 +29,6 @@ Route::group(['middleware' => ['auth']], function () {
 
 Route::get('/test-excel', [\App\Http\Controllers\WellExcelController::class, 'test']);
 
+Route::get('/test-word', [\App\Http\Controllers\WellWordController::class, 'run']);
+
 

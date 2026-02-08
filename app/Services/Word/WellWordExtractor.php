@@ -26,9 +26,11 @@ class WellWordExtractor
 
         $phpWord = IOFactory::load($filePath);
         $records = [];
+        $stopExtraction = false;
 
         foreach ($phpWord->getSections() as $section) {
             foreach ($section->getElements() as $element) {
+
                 if (!method_exists($element, 'getRows')) {
                     continue;
                 }
@@ -38,27 +40,37 @@ class WellWordExtractor
 
                 for ($i = 0; $i < $rowCount; $i++) {
 
+                    $currentRowText = $this->getRowText($rows[$i]);
+
+                    // 🛑 STOP EVERYTHING CONDITION
+                    if ($this->containsStopKeyword($currentRowText)) {
+                        Log::debug('STOP keyword detected. Extraction halted.', [
+                            'row' => $currentRowText
+                        ]);
+                        $stopExtraction = true;
+                        break 2; // exit rows + tables
+                    }
+
                     // ---------- ROW 1: KEYS ----------
-                    $keyRow = $this->getRowText($rows[$i]);
-                    if (!$this->isKeysRow($keyRow)) {
+                    if (!$this->isKeysRow($currentRowText)) {
                         continue;
                     }
 
-                    Log::debug('Keys row detected', $keyRow);
+                    // Log::debug('Keys row detected', $currentRowText);
 
                     // ---------- ROW 2: VALUES ----------
-                    $valueRow = $this->getRowText($rows[$i + 1] ?? null);
+                    $valueRow   = $this->getRowText($rows[$i + 1] ?? null);
 
                     // ---------- ROW 3: SUMMARY ----------
                     $summaryRow = $this->getRowText($rows[$i + 2] ?? null);
 
                     // ---------- ROW 4: MIXED ----------
-                    $mixedRow = $this->getRowText($rows[$i + 3] ?? null);
+                    $mixedRow   = $this->getRowText($rows[$i + 3] ?? null);
 
                     $record = [];
 
                     // Map keys → values
-                    foreach ($keyRow as $index => $rawKey) {
+                    foreach ($currentRowText as $index => $rawKey) {
                         $label = $this->normalizeKey($rawKey);
                         if (!$label) {
                             continue;
@@ -67,12 +79,12 @@ class WellWordExtractor
                         $record[$label] = trim($valueRow[$index] ?? '');
                     }
 
-                    // Summary (single cell)
+                    // Summary row (single logical cell)
                     if (!empty($summaryRow)) {
                         $record['SUMMARY'] = trim(implode(' ', $summaryRow));
                     }
 
-                    // Mixed row (value, key)
+                    // Mixed row (value, key pattern)
                     for ($x = 0; $x < count($mixedRow) - 1; $x += 2) {
                         $value = trim($mixedRow[$x]);
                         $key   = $this->normalizeKey($mixedRow[$x + 1] ?? '');
@@ -82,7 +94,7 @@ class WellWordExtractor
                         }
                     }
 
-                    Log::debug('Record built', $record);
+                    // Log::debug('Record built', $record);
                     $records[] = $record;
 
                     // Skip consumed rows
@@ -91,7 +103,11 @@ class WellWordExtractor
             }
         }
 
-        Log::debug('DOCX extraction completed', ['records' => count($records)]);
+        Log::debug('DOCX extraction completed', [
+            'records' => count($records),
+            'stopped' => $stopExtraction
+        ]);
+
         return $records;
     }
 
@@ -136,5 +152,15 @@ class WellWordExtractor
             }
         }
         return null;
+    }
+
+    protected function containsStopKeyword(array $row): bool
+    {
+        foreach ($row as $cell) {
+            if (stripos($cell, 'WORKOVER ACTIVITIES') !== false) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -13,140 +13,142 @@ class WellExcelController extends Controller
     {
 
         $fileNames = [
-            [
-                'name' => 'app/waha-report-1-1-2026.xlsx',
-                'date' => '01/01/2026',
-                'number' => '366',
-            ],
-            [
-                'name' => 'app/waha-report-2-1-2026.xlsx',
-                'date' => '01/02/2026',
-                'number' => '367',
-            ],
-            [
-                'name' => 'app/waha-report-3-1-2026.xlsx',
-                'date' => '1/03/2026',
-                'number' => '368',
-            ],
-            [
-                'name' => 'app/waha-report-5-1-2026.xlsx',
-                'date' => '01/05/2026',
-                'number' => '370',
-            ],
-            [
-                'name' => 'app/waha-report-6-1-2026.xlsx',
-                'date' => '01/06/2026',
-                'number' => '371',
-            ],
-            [
-                'name' => 'app/waha-report-8-1-2026.xlsx',
-                'date' => '01/08/2026',
-                'number' => '373',
-            ],
+            // [
+            //     'name' => 'app/waha-report-1-1-2026.xlsx',
+            //     'date' => '01/01/2026',
+            //     'number' => '366',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-2-1-2026.xlsx',
+            //     'date' => '01/02/2026',
+            //     'number' => '367',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-3-1-2026.xlsx',
+            //     'date' => '1/03/2026',
+            //     'number' => '368',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-5-1-2026.xlsx',
+            //     'date' => '01/05/2026',
+            //     'number' => '370',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-6-1-2026.xlsx',
+            //     'date' => '01/06/2026',
+            //     'number' => '371',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-8-1-2026.xlsx',
+            //     'date' => '01/08/2026',
+            //     'number' => '373',
+            // ],
+
+            // [
+            //     'name' => 'app/waha-report-9-1-2026.xlsx',
+            //     'date' => '01/09/2026',
+            //     'number' => '374',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-10-1-2026.xlsx',
+            //     'date' => '01/10/2026',
+            //     'number' => '375',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-13-1-2026.xlsx',
+            //     'date' => '01/13/2026',
+            //     'number' => '378',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-14-1-2026.xlsx',
+            //     'date' => '01/14/2026',
+            //     'number' => '379',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-15-1-2026.xlsx',
+            //     'date' => '01/15/2026',
+            //     'number' => '380',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-16-1-2026.xlsx',
+            //     'date' => '01/16/2026',
+            //     'number' => '381',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-18-1-2026.xlsx',
+            //     'date' => '01/18/2026',
+            //     'number' => '383',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-19-1-2026.xlsx',
+            //     'date' => '01/19/2026',
+            //     'number' => '384',
+            // ],
+
+            // //
+
+            // [
+            //     'name' => 'app/waha-report-20-1-2026.xlsx',
+            //     'date' => '01/20/2026',
+            //     'number' => '385',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-22-1-2026.xlsx',
+            //     'date' => '01/22/2026',
+            //     'number' => '387',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-23-1-2026.xlsx',
+            //     'date' => '01/23/2026',
+            //     'number' => '388',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-24-1-2026.xlsx',
+            //     'date' => '01/24/2026',
+            //     'number' => '389',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-25-1-2026.xlsx',
+            //     'date' => '01/25/2026',
+            //     'number' => '390',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-27-1-2026.xlsx',
+            //     'date' => '01/27/2026',
+            //     'number' => '392',
+            // ],            
+            // [
+            //     'name' => 'app/waha-report-28-1-2026.xlsx',
+            //     'date' => '01/28/2026',
+            //     'number' => '393',
+            // ],            
+            // [
+            //     'name' => 'app/waha-report-29-1-2026.xlsx',
+            //     'date' => '01/29/2026',
+            //     'number' => '394',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-30-1-2026.xlsx',
+            //     'date' => '01/30/2026',
+            //     'number' => '395',
+            // ],
+            // [
+            //     'name' => 'app/waha-report-31-1-2026.xlsx',
+            //     'date' => '01/31/2026',
+            //     'number' => '396',
+            // ],
 
             [
-                'name' => 'app/waha-report-9-1-2026.xlsx',
-                'date' => '01/09/2026',
-                'number' => '374',
+                'name' => 'app/WAHA_3-2-2026.xlsx',
+                'date' => '02/03/2026',
+                'number' => '399',
             ],
             [
-                'name' => 'app/waha-report-10-1-2026.xlsx',
-                'date' => '01/10/2026',
-                'number' => '375',
-            ],
-            [
-                'name' => 'app/waha-report-13-1-2026.xlsx',
-                'date' => '01/13/2026',
-                'number' => '378',
-            ],
-            [
-                'name' => 'app/waha-report-14-1-2026.xlsx',
-                'date' => '01/14/2026',
-                'number' => '379',
-            ],
-            [
-                'name' => 'app/waha-report-15-1-2026.xlsx',
-                'date' => '01/15/2026',
-                'number' => '380',
-            ],
-            [
-                'name' => 'app/waha-report-16-1-2026.xlsx',
-                'date' => '01/16/2026',
-                'number' => '381',
-            ],
-            [
-                'name' => 'app/waha-report-18-1-2026.xlsx',
-                'date' => '01/18/2026',
-                'number' => '383',
-            ],
-            [
-                'name' => 'app/waha-report-19-1-2026.xlsx',
-                'date' => '01/19/2026',
-                'number' => '384',
+                'name' => 'app/WAHA_5-2-2026.xlsx',
+                'date' => '02/05/2026',
+                'number' => '401',
             ],
 
-            //
-
-            [
-                'name' => 'app/waha-report-20-1-2026.xlsx',
-                'date' => '01/20/2026',
-                'number' => '385',
-            ],
-            [
-                'name' => 'app/waha-report-22-1-2026.xlsx',
-                'date' => '01/22/2026',
-                'number' => '387',
-            ],
-            [
-                'name' => 'app/waha-report-23-1-2026.xlsx',
-                'date' => '01/23/2026',
-                'number' => '388',
-            ],
-            [
-                'name' => 'app/waha-report-24-1-2026.xlsx',
-                'date' => '01/24/2026',
-                'number' => '389',
-            ],
-            [
-                'name' => 'app/waha-report-25-1-2026.xlsx',
-                'date' => '01/25/2026',
-                'number' => '390',
-            ],
-            [
-                'name' => 'app/waha-report-27-1-2026.xlsx',
-                'date' => '01/27/2026',
-                'number' => '392',
-            ],            
-            [
-                'name' => 'app/waha-report-28-1-2026.xlsx',
-                'date' => '01/28/2026',
-                'number' => '393',
-            ],            
-            [
-                'name' => 'app/waha-report-29-1-2026.xlsx',
-                'date' => '01/29/2026',
-                'number' => '394',
-            ],
-            [
-                'name' => 'app/waha-report-30-1-2026.xlsx',
-                'date' => '01/30/2026',
-                'number' => '395',
-            ],
-            [
-                'name' => 'app/waha-report-31-1-2026.xlsx',
-                'date' => '01/31/2026',
-                'number' => '396',
-            ],
-
-        ];
-
-        
-        $fileNames =[
-            [
-                'name' => 'app/waha-report-1-1-2026.xlsx',
-                'date' => '01/01/2026',
-                'number' => '366',
-            ]
         ];
 
         $allData = [];

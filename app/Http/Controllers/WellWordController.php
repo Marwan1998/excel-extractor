@@ -12,177 +12,218 @@ class WellWordController extends Controller
     public function run()
     {
         $fileNames = [
+            // [
+            //     'name' => 'app/JAN-01-2026.docx',
+            //     'date' => '01/01/2026',
+            //     'number' => '366',
+            // ],
+            // [
+            //     'name' => 'app/JAN-02-2026.docx',
+            //     'date' => '01/02/2026',
+            //     'number' => '367',
+            // ],
+            // [
+            //     'name' => 'app/JAN-03-2026.docx',
+            //     'date' => '01/03/2026',
+            //     'number' => '368',
+            // ],
+            // [
+            //     'name' => 'app/JAN-04-2026.docx',
+            //     'date' => '01/04/2026',
+            //     'number' => '369',
+            // ],
+            // [
+            //     'name' => 'app/JAN-05-2026.docx',
+            //     'date' => '01/05/2026',
+            //     'number' => '370',
+            // ],
+            // [
+            //     'name' => 'app/JAN-06-2026.docx',
+            //     'date' => '01/06/2026',
+            //     'number' => '371',
+            // ],
+            // [
+            //     'name' => 'app/JAN-07-2026.docx',
+            //     'date' => '01/07/2026',
+            //     'number' => '372',
+            // ],
+            // [
+            //     'name' => 'app/JAN-08-2026.docx',
+            //     'date' => '01/08/2026',
+            //     'number' => '373',
+            // ],
+            // [
+            //     'name' => 'app/JAN-09-2026.docx',
+            //     'date' => '01/09/2026',
+            //     'number' => '374',
+            // ],
+            // [
+            //     'name' => 'app/JAN-10-2026.docx',
+            //     'date' => '01/10/2026',
+            //     'number' => '375',
+            // ],
+            // //
+            // [
+            //     'name' => 'app/JAN-11-2026.docx',
+            //     'date' => '01/11/2026',
+            //     'number' => '376',
+            // ],
+            // [
+            //     'name' => 'app/JAN-12-2026.docx',
+            //     'date' => '01/12/2026',
+            //     'number' => '377',
+            // ],
+            // [
+            //     'name' => 'app/JAN-13-2026.docx',
+            //     'date' => '01/13/2026',
+            //     'number' => '378',
+            // ],
+            // [
+            //     'name' => 'app/JAN-14-2026.docx',
+            //     'date' => '01/14/2026',
+            //     'number' => '379',
+            // ],
+            // [
+            //     'name' => 'app/JAN-15-2026.docx',
+            //     'date' => '01/15/2026',
+            //     'number' => '380',
+            // ],
+            // [
+            //     'name' => 'app/JAN-16-2026.docx',
+            //     'date' => '01/16/2026',
+            //     'number' => '381',
+            // ],
+            // [
+            //     'name' => 'app/JAN-17-2026.docx',
+            //     'date' => '01/17/2026',
+            //     'number' => '382',
+            // ],
+            // [
+            //     'name' => 'app/JAN-18-2026.docx',
+            //     'date' => '01/18/2026',
+            //     'number' => '383',
+            // ],
+            // [
+            //     'name' => 'app/JAN-19-2026.docx',
+            //     'date' => '01/19/2026',
+            //     'number' => '384',
+            // ],
+            // [
+            //     'name' => 'app/JAN-20-2026.docx',
+            //     'date' => '01/20/2026',
+            //     'number' => '385',
+            // ],
+            // //
+            // [
+            //     'name' => 'app/JAN-21-2026.docx',
+            //     'date' => '01/21/2026',
+            //     'number' => '386',
+            // ],
+            // [
+            //     'name' => 'app/JAN-22-2026.docx',
+            //     'date' => '01/22/2026',
+            //     'number' => '387',
+            // ],
+            // [
+            //     'name' => 'app/JAN-23-2026.docx',
+            //     'date' => '01/23/2026',
+            //     'number' => '388',
+            // ],
+            // [
+            //     'name' => 'app/JAN-24-2026.docx',
+            //     'date' => '01/24/2026',
+            //     'number' => '389',
+            // ],
+            // [
+            //     'name' => 'app/JAN-25-2026.docx',
+            //     'date' => '01/25/2026',
+            //     'number' => '390',
+            // ],
+            // [
+            //     'name' => 'app/JAN-26-2026.docx',
+            //     'date' => '01/26/2026',
+            //     'number' => '391',
+            // ],
+            // [
+            //     'name' => 'app/JAN-27-2026.docx',
+            //     'date' => '01/27/2026',
+            //     'number' => '392',
+            // ],
+            // [
+            //     'name' => 'app/JAN-28-2026.docx',
+            //     'date' => '01/28/2026',
+            //     'number' => '393',
+            // ],
+            // [
+            //     'name' => 'app/JAN-29-2026.docx',
+            //     'date' => '01/29/2026',
+            //     'number' => '394',
+            // ],
+            // [
+            //     'name' => 'app/JAN-30-2026.docx',
+            //     'date' => '01/30/2026',
+            //     'number' => '395',
+            // ],
+            // [
+            //     'name' => 'app/JAN-31-2026.docx',
+            //     'date' => '01/31/2026',
+            //     'number' => '396',
+            // ],
+
             [
-                'name' => 'app/JAN-01-2026.docx',
-                'date' => '01/01/2026',
-                'number' => '366',
+                'name' => 'app/SOC_FEB-01-2026.docx',
+                'date' => '02/01/2026',
+                'number' => '397',
             ],
             [
-                'name' => 'app/JAN-02-2026.docx',
-                'date' => '01/02/2026',
-                'number' => '367',
+                'name' => 'app/SOC_FEB-02-2026.docx',
+                'date' => '02/02/2026',
+                'number' => '398',
             ],
             [
-                'name' => 'app/JAN-03-2026.docx',
-                'date' => '01/03/2026',
-                'number' => '368',
+                'name' => 'app/SOC_FEB-03-2026.docx',
+                'date' => '02/03/2026',
+                'number' => '399',
             ],
             [
-                'name' => 'app/JAN-04-2026.docx',
-                'date' => '01/04/2026',
-                'number' => '369',
+                'name' => 'app/SOC_FEB-04-2026.docx',
+                'date' => '02/04/2026',
+                'number' => '400',
             ],
             [
-                'name' => 'app/JAN-05-2026.docx',
-                'date' => '01/05/2026',
-                'number' => '370',
+                'name' => 'app/SOC_FEB-05-2026.docx',
+                'date' => '02/05/2026',
+                'number' => '401',
             ],
             [
-                'name' => 'app/JAN-06-2026.docx',
-                'date' => '01/06/2026',
-                'number' => '371',
+                'name' => 'app/SOC_FEB-06-2026.docx',
+                'date' => '02/06/2026',
+                'number' => '402',
             ],
             [
-                'name' => 'app/JAN-07-2026.docx',
-                'date' => '01/07/2026',
-                'number' => '372',
+                'name' => 'app/SOC_FEB-07-2026.docx',
+                'date' => '02/07/2026',
+                'number' => '403',
             ],
             [
-                'name' => 'app/JAN-08-2026.docx',
-                'date' => '01/08/2026',
-                'number' => '373',
-            ],
-            [
-                'name' => 'app/JAN-09-2026.docx',
-                'date' => '01/09/2026',
-                'number' => '374',
-            ],
-            [
-                'name' => 'app/JAN-10-2026.docx',
-                'date' => '01/10/2026',
-                'number' => '375',
-            ],
-            //
-            [
-                'name' => 'app/JAN-11-2026.docx',
-                'date' => '01/11/2026',
-                'number' => '376',
-            ],
-            [
-                'name' => 'app/JAN-12-2026.docx',
-                'date' => '01/12/2026',
-                'number' => '377',
-            ],
-            [
-                'name' => 'app/JAN-13-2026.docx',
-                'date' => '01/13/2026',
-                'number' => '378',
-            ],
-            [
-                'name' => 'app/JAN-14-2026.docx',
-                'date' => '01/14/2026',
-                'number' => '379',
-            ],
-            [
-                'name' => 'app/JAN-15-2026.docx',
-                'date' => '01/15/2026',
-                'number' => '380',
-            ],
-            [
-                'name' => 'app/JAN-16-2026.docx',
-                'date' => '01/16/2026',
-                'number' => '381',
-            ],
-            [
-                'name' => 'app/JAN-17-2026.docx',
-                'date' => '01/17/2026',
-                'number' => '382',
-            ],
-            [
-                'name' => 'app/JAN-18-2026.docx',
-                'date' => '01/18/2026',
-                'number' => '383',
-            ],
-            [
-                'name' => 'app/JAN-19-2026.docx',
-                'date' => '01/19/2026',
-                'number' => '384',
-            ],
-            [
-                'name' => 'app/JAN-20-2026.docx',
-                'date' => '01/20/2026',
-                'number' => '385',
-            ],
-            //
-            [
-                'name' => 'app/JAN-21-2026.docx',
-                'date' => '01/21/2026',
-                'number' => '386',
-            ],
-            [
-                'name' => 'app/JAN-22-2026.docx',
-                'date' => '01/22/2026',
-                'number' => '387',
-            ],
-            [
-                'name' => 'app/JAN-23-2026.docx',
-                'date' => '01/23/2026',
-                'number' => '388',
-            ],
-            [
-                'name' => 'app/JAN-24-2026.docx',
-                'date' => '01/24/2026',
-                'number' => '389',
-            ],
-            [
-                'name' => 'app/JAN-25-2026.docx',
-                'date' => '01/25/2026',
-                'number' => '390',
-            ],
-            [
-                'name' => 'app/JAN-26-2026.docx',
-                'date' => '01/26/2026',
-                'number' => '391',
-            ],
-            [
-                'name' => 'app/JAN-27-2026.docx',
-                'date' => '01/27/2026',
-                'number' => '392',
-            ],
-            [
-                'name' => 'app/JAN-28-2026.docx',
-                'date' => '01/28/2026',
-                'number' => '393',
-            ],
-            [
-                'name' => 'app/JAN-29-2026.docx',
-                'date' => '01/29/2026',
-                'number' => '394',
-            ],
-            [
-                'name' => 'app/JAN-30-2026.docx',
-                'date' => '01/30/2026',
-                'number' => '395',
-            ],
-            [
-                'name' => 'app/JAN-31-2026.docx',
-                'date' => '01/31/2026',
-                'number' => '396',
+                'name' => 'app/SOC_FEB-08-2026.docx',
+                'date' => '02/08/2026',
+                'number' => '404',
             ],
 
         ];
 
-        $allData = [];
-        foreach ($fileNames as $value) {
-            $filePath = storage_path($value['name']);
-            $extractor = new WellWordExtractor();
-            $data = $extractor->extract($filePath);
+        // $allData = [];
+        // foreach ($fileNames as $value) {
+        //     $filePath = storage_path($value['name']);
+        //     $extractor = new WellWordExtractor();
+        //     $data = $extractor->extract($filePath);
 
-            array_push($allData, [count($data) => $data]);
+        //     array_push($allData, [count($data) => $data]);
             
-            \Log::debug('Data', [$value['name'] => count($data)]);
-        }
-        return $allData;
+        //     \Log::debug('Data', [$value['name'] => count($data)]);
+        // }
+        // return $allData;
 
         return $this->runExtraction($fileNames);
 

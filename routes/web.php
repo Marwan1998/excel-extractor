@@ -27,10 +27,5 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 
-Route::get('/test-excel', [\App\Http\Controllers\WellExcelController::class, 'test']);
-
-Route::get('/test-word', [\App\Http\Controllers\WellWordController::class, 'run']);
-
-Route::get('/test-pdf', [\App\Http\Controllers\WellPdfController::class, 'run']);
-
+Route::get('/run-extraction', [\App\Http\Controllers\MainExtractorController::class, 'run']);
 

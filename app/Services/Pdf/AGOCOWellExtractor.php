@@ -5,7 +5,7 @@ namespace App\Services\Pdf;
 use Smalot\PdfParser\Parser;
 use Illuminate\Support\Facades\Log;
 
-class WellPdfExtractor
+class AGOCOWellExtractor
 {
     protected Parser $parser;
 

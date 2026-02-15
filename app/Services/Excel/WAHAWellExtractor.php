@@ -5,7 +5,7 @@ namespace App\Services\Excel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
-class WellExcelExtractor
+class WAHAWellExtractor
 {
     protected array $inlineTextRules;
     protected array $standaloneKeys;

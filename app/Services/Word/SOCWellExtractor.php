@@ -5,7 +5,7 @@ namespace App\Services\Word;
 use PhpOffice\PhpWord\IOFactory;
 use Illuminate\Support\Facades\Log;
 
-class WellWordExtractor
+class SOCWellExtractor
 {
     protected array $labelMap = [
         'TD'         => 'TD/TARGET',

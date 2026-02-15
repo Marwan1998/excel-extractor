@@ -31,4 +31,6 @@ Route::get('/test-excel', [\App\Http\Controllers\WellExcelController::class, 'te
 
 Route::get('/test-word', [\App\Http\Controllers\WellWordController::class, 'run']);
 
+Route::get('/test-pdf', [\App\Http\Controllers\WellPdfController::class, 'run']);
+
 

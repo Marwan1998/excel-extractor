@@ -47,11 +47,16 @@ class ExtractionDump
             // 5️⃣ Write rows
             foreach ($data as $record) {
 
-                if(is_numeric($record['DAY'])){
-                    $spudDate = $this->getExcelDateFormat($this->calculateSpudDate($value['date'], $record['DAY']));
+                if(isset($record['DAY'])){
+                    if(is_numeric($record['DAY'])){
+                        $spudDate = $this->getExcelDateFormat($this->calculateSpudDate($value['date'], $record['DAY']));
+                    } else {
+                        $spudDate = '';
+                    }
                 } else {
-                    $spudDate = '';
+                    $spudDate = $record['spud_date'] ?? null;
                 }
+
 
                 $dailyFootage = $this->cleanNumericValue($record['PROG'] ?? null);
                 $cumCost = $this->cleanNumericValue($record['CUM.COST'] ?? null);

@@ -27,24 +27,13 @@ class WAHAExtractionDump extends ExtractionDump
             $data = $extractor->extract($filePath);
 
             $fields = [
-                'B239I-59W' => 'WAHA',
-                'B234-59W' => 'WAHA',
-                'A170-59W' => 'WAHA',
-                'V63-59W' => 'BELHEDAN SITE',
-                'F29-59W' => 'KHALIFA SITE',
-                'B237-59W' => 'WAHA',
-                'P37-59E' => 'MASRAB',
-                'B225i-59W' => 'WAHA',
-                'B241-59W' => 'N.DEFA',
-                'B236-59W' => 'S.DEFA',
-                'B233-59W' => 'S.DEFA',
-                'B232i-59W' => 'S.DEFA',
-                'Q124H-71' => 'WAHA',
-                '6P4-59E' => 'HARASH',
-                'B233A-59W' => 'NO_DATA',
-                'B243H-59W' => 'NO_DATA',
-                'B240-59W' => 'N.DEFA',
-                'B235-59W' => 'WAHA',
+                'B244H-59W' =>'WAHA',
+                'A171-59W' =>'WAHA',
+                'Q126-71' =>'WAHA',
+                'B250H-59W' =>'WAHA',
+                'B251I-59W' =>'WAHA',
+                'V62-59W' => 'SAMAH',
+                '6P4-59E' => 'GIALO',
             ];
 
 

@@ -70,7 +70,12 @@ class WAHAWellExtractor
                 | 1️⃣ INLINE TEXT RULES (WELL NAME etc.)
                 |--------------------------------------------------------------------------
                 */
+
+
                 foreach ($this->inlineTextRules as $key => $regex) {
+                    
+                    logd([$key, $regex, $raw, preg_match($regex, $raw, $m)]);
+
                     if (preg_match($regex, $raw, $m)) {
 
                         // 🔴 WELL NAME = HARD RECORD BOUNDARY

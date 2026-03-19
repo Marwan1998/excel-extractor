@@ -27,5 +27,7 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 
-Route::get('/run-extraction', [\App\Http\Controllers\MainExtractorController::class, 'run']);
+Route::get('/run-drilling', [\App\Http\Controllers\MainExtractorController::class, 'runDrilling']);
+
+Route::get('/run-workover', [\App\Http\Controllers\MainExtractorController::class, 'runWorkover']);
 

@@ -146,6 +146,14 @@ class AGOCOWellExtractor
             $record['TD/TARGET'] = str_replace(',', '', $m[1]);
         }
 
+        // OBJECTIVE (OPER)
+        if (preg_match('/OPER:\s*(.*?)(?:\s+TD:|$)/i', $line, $m)) {
+            $record['OBJECTIVE'] = trim($m[1]) ?: null;
+        } else {
+            $record['OBJECTIVE'] = '';
+        }
+
+
         return $record;
     }
 }

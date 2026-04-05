@@ -47,17 +47,6 @@ class ExtractionDumpWorkover
             // 5️⃣ Write rows
             foreach ($data as $record) {
 
-                // if(isset($record['DAY'])){
-                //     if(is_numeric($record['DAY'])){
-                //         $spudDate = $this->getExcelDateFormat($this->calculateSpudDate($value['date'], $record['DAY']));
-                //     } else {
-                //         $spudDate = '';
-                //     }
-                // } else {
-                //     $spudDate = $record['spud_date'] ?? null;
-                // }
-
-
                 $cumCost = $this->cleanNumericValue($record['CUM.COST'] ?? null);
 
                 $composedWellName = $this->splitWellName($record['WELL NAME'] ?? 'NO_DATA');
@@ -79,19 +68,20 @@ class ExtractionDumpWorkover
                 $sheet->setCellValue("F{$startRow}", $record['CONTR/RIG NO'] ?? '');
                 $sheet->setCellValue("G{$startRow}", $record['OBJECTIVE'] ?? '');
 
-                // $sheet->setCellValue("H{$startRow}", $spudDate ?? '');
                 $sheet->setCellValue("H{$startRow}", $startOperation ?? '');
                 $sheet->getStyle("H{$startRow}")->getNumberFormat()->setFormatCode('mm/dd/yyyy');  
 
                 $sheet->setCellValue("I{$startRow}", $record['BUDGET'] ?? 0);
                 $sheet->setCellValue("J{$startRow}", $cumCost ?? 0);
                 $sheet->setCellValue("K{$startRow}", $record['SUMMARY'] ?? '');
+                
+                $sheet->setCellValue("L{$startRow}", $record['DAY'] ?? null);
 
 
                 $startRow++;
             }
 
-            // 6️⃣ Save back to DDR.xlsx
+            // 6️⃣ Save back to DWR.xlsx
             $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
             $writer->save($dwrPath);
 
@@ -99,7 +89,7 @@ class ExtractionDumpWorkover
             array_push($dataAdded, ['file-name' => $value['name'], 'count' => count($data), 'report-done' => $value]);
         }
 
-        \Log::info('Done inserting DDR successfully');
+        \Log::info('Done inserting DWR successfully');
 
         return $dataAdded;
     }
@@ -143,20 +133,6 @@ class ExtractionDumpWorkover
         // No well code → whole string is well name
         return [$value, ''];
     }
-
-    // private function calculateSpudDate($date, $days)
-    // {
-    //     if(empty($date) || empty($days) || $days == 0 || !is_numeric($days)){
-    //         return '';
-    //     }
-
-    //     $date = Carbon::createFromFormat('m/d/Y', $date);
-
-    //     // Subtract the desired number of days
-    //     $newDate = $date->copy()->subDays($days)->format('m/d/Y');
-
-    //     return $newDate; // Output: 22/12/2025
-    // }
 
     private function getExcelDateFormat($dateValue)
     {

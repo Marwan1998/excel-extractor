@@ -66,6 +66,8 @@ class AGOCOWellExtractor
 
             if (preg_match('/CC:\s*([\d,]+)/i', $line, $m)) {
                 $current['CUM.COST'] = str_replace(',', '', $m[1]);
+                // $current['CUM.COST'] = (int)cleanNumericValue($current['CUM.COST']);
+                $current['CUM.COST'] = (float)$current['CUM.COST'];
             }
 
             // 🟢 SUMMARY START

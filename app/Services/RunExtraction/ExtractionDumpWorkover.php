@@ -51,7 +51,7 @@ class ExtractionDumpWorkover
 
                 $composedWellName = $this->splitWellName($record['WELL NAME'] ?? 'NO_DATA');
                 [$well, $field] = $this->splitWellName($record['WELL NAME'] ?? 'NO_DATA');
-                \Log::debug('Split well name', ['input' => $record['WELL NAME'] ?? 'NO_DATA', 'well_name' => $well, 'field_name' => $field]); //TODO: remove this TEMP log
+                // \Log::debug('Split well name', ['input' => $record['WELL NAME'] ?? 'NO_DATA', 'well_name' => $well, 'field_name' => $field]); //TODO: remove this TEMP log
 
                 $wellName = $composedWellName[0];
                 $fieldName = str_replace(' ', '', $composedWellName[1]);//to remove any spaces in the name

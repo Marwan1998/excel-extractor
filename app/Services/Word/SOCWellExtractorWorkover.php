@@ -50,7 +50,7 @@ class SOCWellExtractorWorkover
                     // START after WORKOVER
                     if (!$startExtraction && $this->containsKeyword($row, 'WORKOVER ACTIVITIES')) {
                         $startExtraction = true;
-                        Log::debug('WORKOVER section detected');
+                        // Log::debug('WORKOVER section detected');
                         continue;
                     }
 

@@ -16,6 +16,8 @@ class ExtractionDumpWorkover
 
     public function __construct($extractorClass, $companyName, $excelDBFileStoragePathName)
     {
+        logd($extractorClass);
+
         $this->extractorClass = $extractorClass;
         $this->companyName = $companyName;
         $this->excelDBFileStoragePathName = $excelDBFileStoragePathName;
@@ -47,14 +49,10 @@ class ExtractionDumpWorkover
             // 5️⃣ Write rows
             foreach ($data as $record) {
 
-                $cumCost = $this->cleanNumericValue($record['CUM.COST'] ?? null);
+                $cumCost = $this->cleanNumericValue($record['cumulative_cost'] ?? null);
 
-                $composedWellName = $this->splitWellName($record['WELL NAME'] ?? 'NO_DATA');
-                [$well, $field] = $this->splitWellName($record['WELL NAME'] ?? 'NO_DATA');
-                // \Log::debug('Split well name', ['input' => $record['WELL NAME'] ?? 'NO_DATA', 'well_name' => $well, 'field_name' => $field]); //TODO: remove this TEMP log
-
-                $wellName = $composedWellName[0];
-                $fieldName = str_replace(' ', '', $composedWellName[1]);//to remove any spaces in the name
+                $wellName = $record['well_name'];
+                $fieldName = $record['field_name'];
 
                 $sheet->setCellValue("A{$startRow}", $reportDate);
                 $sheet->getStyle("A{$startRow}")->getNumberFormat()->setFormatCode('d-mmm-yy');  
@@ -65,17 +63,17 @@ class ExtractionDumpWorkover
                 $sheet->setCellValue("D{$startRow}", $fieldName);
 
                 $sheet->setCellValue("E{$startRow}", $wellName);
-                $sheet->setCellValue("F{$startRow}", $record['CONTR/RIG NO'] ?? '');
-                $sheet->setCellValue("G{$startRow}", $record['OBJECTIVE'] ?? '');
+                $sheet->setCellValue("F{$startRow}", $record['rig_name'] ?? '');
+                $sheet->setCellValue("G{$startRow}", $record['objective'] ?? '');
 
                 $sheet->setCellValue("H{$startRow}", $startOperation ?? '');
                 $sheet->getStyle("H{$startRow}")->getNumberFormat()->setFormatCode('mm/dd/yyyy');  
 
-                $sheet->setCellValue("I{$startRow}", $record['BUDGET'] ?? 0);
+                $sheet->setCellValue("I{$startRow}", $record['budget'] ?? 0);
                 $sheet->setCellValue("J{$startRow}", $cumCost ?? 0);
-                $sheet->setCellValue("K{$startRow}", $record['SUMMARY'] ?? '');
+                $sheet->setCellValue("K{$startRow}", $record['summary'] ?? '');
                 
-                $sheet->setCellValue("L{$startRow}", $record['DAY'] ?? null);
+                $sheet->setCellValue("L{$startRow}", $record['operating_days'] ?? null);
 
 
                 $startRow++;
@@ -107,31 +105,6 @@ class ExtractionDumpWorkover
         }
 
         return null;
-    }
-
-    private function splitWellName(string $value): array
-    {
-        // Normalize spaces
-        $value = trim(preg_replace('/\s+/', ' ', $value));
-
-        // Normalize dots spacing: "S. ZELTEN" → "S.ZELTEN"
-        $value = preg_replace('/\s*\.\s*/', '.', $value);
-
-        // Detect well code at the beginning
-        if (preg_match('/^([A-Z0-9]+[-][A-Z0-9\-]+)/i', $value, $match)) {
-            $wellCode = $match[1];
-
-            // Remove well code from string
-            $remaining = trim(substr($value, strlen($wellCode)));
-
-            return [
-                $wellCode,
-                $remaining ?: ''
-            ];
-        }
-
-        // No well code → whole string is well name
-        return [$value, ''];
     }
 
     private function getExcelDateFormat($dateValue)

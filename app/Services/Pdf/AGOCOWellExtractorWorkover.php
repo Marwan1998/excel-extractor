@@ -52,8 +52,8 @@ class AGOCOWellExtractorWorkover
                     // clean summary
                     $currentRow['summary'] = $this->cleanSummary($currentRow['summary']);
 
-                    if (!$currentRow['operation_type']) {
-                        $currentRow['operation_type'] = 'EMPTY';
+                    if (!$currentRow['objective']) {
+                        $currentRow['objective'] = 'EMPTY';
                     }
 
                     $results[] = $currentRow;
@@ -101,8 +101,8 @@ class AGOCOWellExtractorWorkover
                     // clean summary
                     $currentRow['summary'] = $this->cleanSummary($currentRow['summary']);
                     
-                    if (!$currentRow['operation_type']) {
-                        $currentRow['operation_type'] = 'EMPTY';
+                    if (!$currentRow['objective']) {
+                        $currentRow['objective'] = 'EMPTY';
                     }
 
                     $results[] = $currentRow;
@@ -128,13 +128,13 @@ class AGOCOWellExtractorWorkover
                     'rig_name'         => trim($matches[2]),
                     'operating_days'   => (int)$matches[4],
                     'cumulative_cost'  => (int)str_replace(',', '', $matches[7]),
-                    'operation_type'   => $operation ?: null,
+                    'objective'   => $operation ?: null,
                     'summary'          => null,
                 ];
 
                 // normalize
-                if ($currentRow['operation_type']) {
-                    $currentRow['operation_type'] = str_replace('-', '', $currentRow['operation_type']);
+                if ($currentRow['objective']) {
+                    $currentRow['objective'] = str_replace('-', '', $currentRow['objective']);
                 }
 
                 // Log::debug('Parsed Data Row', $currentRow);
@@ -152,10 +152,10 @@ class AGOCOWellExtractorWorkover
                 !str_contains($line, 'SUMMARY')
             ) {
 
-                if (!$currentRow['operation_type']) {
-                    $currentRow['operation_type'] = trim($line);
+                if (!$currentRow['objective']) {
+                    $currentRow['objective'] = trim($line);
                 } else {
-                    $currentRow['operation_type'] .= ' ' . trim($line);
+                    $currentRow['objective'] .= ' ' . trim($line);
                     $pendingOperationType = false;
                 }
 
@@ -191,8 +191,8 @@ class AGOCOWellExtractorWorkover
                     // clean summary
                     $currentRow['summary'] = $this->cleanSummary($currentRow['summary']);
 
-                    if (!$currentRow['operation_type']) {
-                        $currentRow['operation_type'] = 'EMPTY';
+                    if (!$currentRow['objective']) {
+                        $currentRow['objective'] = 'EMPTY';
                     }
 
                     $results[] = $currentRow;
@@ -230,8 +230,8 @@ class AGOCOWellExtractorWorkover
             // clean summary
             $currentRow['summary'] = $this->cleanSummary($currentRow['summary']);
 
-            if (!$currentRow['operation_type']) {
-                $currentRow['operation_type'] = 'EMPTY';
+            if (!$currentRow['objective']) {
+                $currentRow['objective'] = 'EMPTY';
             }
 
             $results[] = $currentRow;

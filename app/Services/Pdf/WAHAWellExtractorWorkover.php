@@ -22,20 +22,20 @@ class WAHAWellExtractorWorkover
         // Normalize global text (keep line breaks!)
         $text = preg_replace('/\r/', '', $text);
 
-        Log::debug('==== FULL TEXT SAMPLE ====');
-        Log::debug(substr($text, 0, 1500));
+        // Log::debug('==== FULL TEXT SAMPLE ====');
+        // Log::debug(substr($text, 0, 1500));
 
         // Split into blocks (each well)
         preg_match_all('/[A-Z]+-\d+.*?(?=\n[A-Z]+-\d+|$)/s', $text, $blocks);
 
-        Log::debug('Blocks found: ' . count($blocks[0]));
+        // Log::debug('Blocks found: ' . count($blocks[0]));
 
         $results = [];
 
         foreach ($blocks[0] as $i => $block) {
 
-            Log::debug("---- BLOCK $i ----");
-            Log::debug(substr($block, 0, 500));
+            // Log::debug("---- BLOCK $i ----");
+            // Log::debug(substr($block, 0, 500));
 
             // ✅ KEEP RAW BLOCK (for SUMMARY)
             $rawBlock = $block;

@@ -49,10 +49,13 @@ class ExtractionDumpWorkover
             // 5️⃣ Write rows
             foreach ($data as $record) {
 
-                $cumCost = $this->cleanNumericValue($record['cumulative_cost'] ?? null);
+                $cumCost = cleanNumericValue($record['cumulative_cost'] ?? null);
 
                 $wellName = $record['well_name'];
                 $fieldName = $record['field_name'];
+
+                $buget = str_replace(',', '', $record['budget']??0);
+                $buget = cleanNumericValue($buget);
 
                 $sheet->setCellValue("A{$startRow}", $reportDate);
                 $sheet->getStyle("A{$startRow}")->getNumberFormat()->setFormatCode('d-mmm-yy');  
@@ -69,10 +72,10 @@ class ExtractionDumpWorkover
                 $sheet->setCellValue("H{$startRow}", $startOperation ?? '');
                 $sheet->getStyle("H{$startRow}")->getNumberFormat()->setFormatCode('mm/dd/yyyy');  
 
-                $sheet->setCellValue("I{$startRow}", $record['budget'] ?? 0);
+                $sheet->setCellValue("I{$startRow}", $buget ?? 0);
                 $sheet->setCellValue("J{$startRow}", $cumCost ?? 0);
                 $sheet->setCellValue("K{$startRow}", $record['summary'] ?? '');
-                
+
                 $sheet->setCellValue("L{$startRow}", $record['operating_days'] ?? null);
 
 
@@ -90,21 +93,6 @@ class ExtractionDumpWorkover
         \Log::info('Done inserting DWR successfully');
 
         return $dataAdded;
-    }
-
-    private function cleanNumericValue($value)
-    {
-        // Only reject real empties
-        if ($value === null || trim((string)$value) === '') {
-            return null;
-        }
-
-        // Extract first number (integer or decimal)
-        if (preg_match('/\d+(\.\d+)?/', $value, $matches)) {
-            return $matches[0];
-        }
-
-        return null;
     }
 
     private function getExcelDateFormat($dateValue)

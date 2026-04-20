@@ -56,12 +56,8 @@ class MainExtractorController extends Controller
 
         $SOC_fileNames = [
             [
-                'name' => 'app/new/SOC DAILY DRLG & WO REPORT_APR-18-2026.docx',
-                'date' => '04/18/2026',
-            ],
-            [
-                'name' => 'app/new/SOC DAILY DRLG & WO REPORT_APR-19-2026.docx',
-                'date' => '04/19/2026',
+                'name' => 'app/new/SOC DAILY DRLG & WO REPORT_APR-20-2026.docx',
+                'date' => '04/20/2026',
             ],
 
 
@@ -109,11 +105,11 @@ class MainExtractorController extends Controller
         ];
 
 
-        foreach ($AOO_fileNames as $value) {
-            $filePath = storage_path($value['name']);
-            logd(['real' => $value['name'], 'Date' => extractDateFromFileName($filePath)]);
-        }
-        return 0;
+        // foreach ($AOO_fileNames as $value) {
+        //     $filePath = storage_path($value['name']);
+        //     logd(['real' => $value['name'], 'Date' => extractDateFromFileName($filePath)]);
+        // }
+        // return 0;
 
 
         // return logData($WAHA_fileNames, WAHAWellExtractor::class);
@@ -121,9 +117,9 @@ class MainExtractorController extends Controller
         // return $run->runExtraction($WAHA_fileNames);
 
 
-        // return logData($SOC_fileNames, SOCWellExtractor::class);
-        // $run = new SOCExtractionDump();
-        // return $run->runExtraction($SOC_fileNames);
+        return logData($SOC_fileNames, SOCWellExtractor::class);
+        $run = new SOCExtractionDump();
+        return $run->runExtraction($SOC_fileNames);
 
         // return logData($AGOCO_fileNames, AGOCOWellExtractor::class);
         // $run = new AGOCOExtractionDump();

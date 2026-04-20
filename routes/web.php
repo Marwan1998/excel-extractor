@@ -20,14 +20,21 @@ Route::get('/', function () {
 Auth::routes(['register' => false]);
 
 
-Route::group(['middleware' => ['auth']], function () {
+// Route::group(['middleware' => ['auth']], function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-    Route::resource('users', App\Http\Controllers\UserController::class);
-});
+    // Route::resource('users', App\Http\Controllers\UserController::class);
+// });
 
 
 Route::get('/run-drilling', [\App\Http\Controllers\MainExtractorController::class, 'runDrilling']);
 
 Route::get('/run-workover', [\App\Http\Controllers\MainExtractorController::class, 'runWorkover']);
+
+
+
+Route::resource('extractorInterfaces', App\Http\Controllers\ExtractorInterfaceController::class)->only(['index', 'create', 'store']);
+
+Route::post('validate-report-data', [\App\Http\Controllers\ExtractorInterfaceController::class, 'validateReportData'])->name('extractorInterfaces.validateReportData');
+Route::get('download-single/{name}', [\App\Http\Controllers\ExtractorInterfaceController::class, 'downloadSingle'])->name('extractorInterfaces.downloadSingle');
 

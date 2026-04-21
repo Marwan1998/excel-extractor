@@ -99,7 +99,7 @@ class ExtractionDump
             $writer->save($ddrPath);
 
             \Log::debug('Count', [$value['name'] => count($data), 'report-done' => $value]);
-            array_push($dataAdded, ['file-name' => $value['name'], 'count' => count($data), 'report-done' => $value]);
+            array_push($dataAdded, ['file-name' => $value['name'], 'count' => count($data), 'date' => $value['date']]);
         }
 
         \Log::info('Done inserting DDR successfully');

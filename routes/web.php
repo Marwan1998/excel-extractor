@@ -37,4 +37,4 @@ Route::resource('extractorInterfaces', App\Http\Controllers\ExtractorInterfaceCo
 
 Route::post('validate-report-data', [\App\Http\Controllers\ExtractorInterfaceController::class, 'validateReportData'])->name('extractorInterfaces.validateReportData');
 Route::get('download-single/{name}', [\App\Http\Controllers\ExtractorInterfaceController::class, 'downloadSingle'])->name('extractorInterfaces.downloadSingle');
-
+Route::post('empty-ddrdwr-files', [\App\Http\Controllers\ExtractorInterfaceController::class, 'emptyDDRDWRFiles'])->name('extractorInterfaces.emptyDDRDWRFiles');

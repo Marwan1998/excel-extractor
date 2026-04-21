@@ -16,12 +16,7 @@
         <div class="container-fluid">
             <div class="row mb-3">
                 <div class="col-sm-4">
-                    {{-- <div>
-                        <p class="m-0">Empty files</p>
-                        <a href="http://" download>DDR</a>
-                        <a href="http://" download>DWR</a>                        
-                    </div> --}}
-                    <a href="#" class="btn btn-danger btn-sm">Empty DDR&DWR</a>
+                    <a href="javascript:void(0)" id="empty-files-btn" class="btn btn-danger btn-sm">Empty DDR & DWR</a>
                 </div>
                 <div class="col-sm-6"></div>
                 <div class="col-sm-2 text-right">
@@ -87,6 +82,31 @@
                 document.getElementById('dl-dwr').click();
             }, 500);
         }
+    </script>
+
+    <script>
+        document.getElementById('empty-files-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+
+            if (confirm("Are you sure you want to clear data in both DDR and DWR files? This cannot be undone.")) {
+                
+                fetch("{{ route('extractorInterfaces.emptyDDRDWRFiles') }}", {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting files.');
+                });
+            }
+        });
     </script>
 
     <script>

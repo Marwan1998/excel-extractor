@@ -6,19 +6,32 @@ use App\Http\Requests\CreateExtractorInterfaceRequest;
 use Flash;
 use App\Http\Controllers\AppBaseController;
 use Illuminate\Http\Request;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
-// Drilling
+// Drilling - WAHA
 use App\Services\Excel\WAHAWellExtractor;
 use App\Services\RunExtraction\WAHAExtractionDump;
+// Drilling - SOC
 use App\Services\Word\SOCWellExtractor;
 use App\Services\RunExtraction\SOCExtractionDump;
+// Drilling - AGOCO
 use App\Services\Pdf\AGOCOWellExtractor;
 use App\Services\RunExtraction\AGOCOExtractionDump;
+// Drilling - AOO
 use App\Services\Pdf\AOOWellExtractor;
 use App\Services\RunExtraction\AOOExtractionDump;
 
-// Workover
 
+
+// Workover - WAHA
+use App\Services\RunExtraction\Workover\WAHAExtractionDumpWorkover;
+use App\Services\Pdf\WAHAWellExtractorWorkover;
+// Workover - SOC
+use App\Services\Word\SOCWellExtractorWorkover;
+use App\Services\RunExtraction\Workover\SOCExtractionDumpWorkover;
+// Workover - AGOCO
+use App\Services\Pdf\AGOCOWellExtractorWorkover;
+use App\Services\RunExtraction\Workover\AGOCOExtractionDumpWorkover;
 
 
 class ExtractorInterfaceController extends AppBaseController
@@ -43,25 +56,25 @@ class ExtractorInterfaceController extends AppBaseController
                 switch ($input['company_name']) {
                     case 'soc':
                         $run = new SOCExtractionDump();
-                        $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date'], ]]);
+                        $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
                         unlink(storage_path($fullPath)); // Delete temp file
                         break;
 
                     case 'agoco':
                         $run = new AGOCOExtractionDump();
-                        $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date'], ]]);
+                        $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
                         unlink(storage_path($fullPath)); // Delete temp file
                         break;
 
                     case 'waha':
                         $run = new WAHAExtractionDump();
-                        $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date'], ]]);
+                        $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
                         unlink(storage_path($fullPath)); // Delete temp file
                         break;
 
                     case 'aoo':
                         $run = new AOOExtractionDump();
-                        $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date'], ]]);
+                        $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
                         unlink(storage_path($fullPath)); // Delete temp file
                         break;
 
@@ -74,22 +87,23 @@ class ExtractorInterfaceController extends AppBaseController
                 switch ($input['company_name']) {
                     case 'soc':
                         $run = new SOCExtractionDumpWorkover();
-                        $dataInserted = $run->runExtraction($input['file_name']);
+                        $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
                         break;
 
                     case 'agoco':
+                        logd('hit agoco case');
                         $run = new AGOCOExtractionDumpWorkover();
-                        $dataInserted = $run->runExtraction($input['file_name']);
+                        $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
                         break;
 
                     case 'waha':
                         $run = new WAHAExtractionDumpWorkover();
-                        $dataInserted = $run->runExtraction($input['file_name']);
+                        $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
                         break;
 
                     // case 'aoo':
                         // $run = new AOOExtractionDumpWorkover();
-                        // $dataInserted = $run->runExtraction($input['file_name']);
+                        // $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
                     //     break;
 
                     default:
@@ -184,6 +198,7 @@ class ExtractorInterfaceController extends AppBaseController
     }
 
 
+
     public function downloadSingle($name)
     {
         $path = storage_path('app/' . $name);
@@ -193,9 +208,32 @@ class ExtractorInterfaceController extends AppBaseController
         abort(404, "File $name not found");
     }
 
-    public function cleanFile(Request $request)
+    public function emptyDDRDWRFiles(Request $request)
     {
-        //
+        $fileNames = ['DDR.xlsx', 'DWR.xlsx'];
+        
+        foreach ($fileNames as $fileName) {
+            $filePath = storage_path('app/' . $fileName);
+
+            if (file_exists($filePath)) {
+                $spreadsheet = IOFactory::load($filePath);
+                $sheet = $spreadsheet->getActiveSheet();
+
+                // Find last used row
+                $highestRow = $sheet->getHighestRow();
+
+                // Clear data starting from Row 2 (keeping headers)
+                if ($highestRow > 1) {
+                    // If highestRow is 10, we remove from 3 to 10 (8 rows total)
+                    $sheet->removeRow(3, $highestRow - 1);
+                }
+
+                $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+                $writer->save($filePath);
+            }
+        }
+
+        return response()->json(['message' => 'DDR and DWR files have been reset.']);
     }
 
 }

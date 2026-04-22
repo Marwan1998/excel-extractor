@@ -14,21 +14,21 @@
 <!-- Company Name Field -->
 <div class="form-group col-sm-3">
     {!! Form::label('company_name', __('models/extractorInterfaces.fields.company_name').':') !!}
-    {!! Form::select('company_name', $companies, null, ['class' => 'form-control custom-select']) !!}
+    {!! Form::select('company_name', $companies, null, ['class' => 'form-control custom-select', 'required' => true]) !!}
 </div>
 
 
 <!-- Report Type Field -->
 <div class="form-group col-sm-3">
     {!! Form::label('report_type', __('models/extractorInterfaces.fields.report_type').':') !!}
-    {!! Form::select('report_type', ['drilling' => 'drilling', 'workover' => 'workover'], null, ['class' => 'form-control custom-select']) !!}
+    {!! Form::select('report_type', [null => 'Please Select', 'drilling' => 'Drilling', 'workover' => 'Workover'], null, ['class' => 'form-control custom-select', 'required' => true]) !!}
 </div>
 
 
 <!-- Date Field -->
 <div class="form-group col-sm-3">
     {!! Form::label('date', __('models/extractorInterfaces.fields.date').':') !!}
-    {!! Form::text('date', null, ['class' => 'form-control','id'=>'date']) !!}
+    {!! Form::text('date', null, ['class' => 'form-control', 'id' => 'date', 'required' => true]) !!}
 </div>
 
 @push('page_scripts')

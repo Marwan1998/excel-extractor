@@ -175,7 +175,7 @@
                 return response.json();
             })
             .then(data => {
-                btn.innerText = "@lang('crud.validateReportData')";
+                btn.innerText = "@lang('models/extractorInterfaces.validateReportData')";
                 btn.classList.remove('disabled');
                 
                 container.style.display = 'block';

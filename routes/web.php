@@ -32,8 +32,10 @@ Route::get('/run-drilling', [\App\Http\Controllers\MainExtractorController::clas
 Route::get('/run-workover', [\App\Http\Controllers\MainExtractorController::class, 'runWorkover']);
 
 
-
-Route::resource('extractorInterfaces', App\Http\Controllers\ExtractorInterfaceController::class)->only(['index', 'create', 'store']);
+Route::get('extractorInterfaces', function () {
+    return redirect('extractorInterfaces/create');
+});
+Route::resource('extractorInterfaces', App\Http\Controllers\ExtractorInterfaceController::class)->only(['create', 'store']);
 
 Route::post('validate-report-data', [\App\Http\Controllers\ExtractorInterfaceController::class, 'validateReportData'])->name('extractorInterfaces.validateReportData');
 Route::get('download-single/{name}', [\App\Http\Controllers\ExtractorInterfaceController::class, 'downloadSingle'])->name('extractorInterfaces.downloadSingle');

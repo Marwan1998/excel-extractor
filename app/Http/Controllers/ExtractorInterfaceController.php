@@ -38,7 +38,7 @@ class ExtractorInterfaceController extends AppBaseController
 {
     public function create()
     {
-        $companies = [null => 'Please Select', 'soc' => 'Sirte Oil Company', 'agoco' => 'AGOCO', 'waha' => 'WAHA Oil Company', 'aoo' => 'Akakus'];
+        $companies = [null => 'Please Select', 'soc' => 'Sirte Oil Company', 'agoco' => 'AGOCO', 'waha' => 'WAHA Oil Company'];//, 'aoo' => 'Akakus'
 
         return view('extractor_interfaces.create')->with('companies', $companies);
     }

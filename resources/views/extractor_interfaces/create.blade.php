@@ -15,10 +15,34 @@
     <section class="content-header pt-0 pb-0">
         <div class="container-fluid">
             <div class="row mb-3">
-                <div class="col-sm-4">
+                <div class="col-sm-2">
                     <a href="javascript:void(0)" id="empty-files-btn" class="btn btn-danger btn-sm">Empty DDR & DWR</a>
                 </div>
-                <div class="col-sm-6"></div>
+
+                <div class="col-sm-8 text-center">
+                    <span class="text-info" style="cursor: pointer;" data-toggle="popover" data-trigger="hover" data-html="true" title="Instructions & Info" data-content="
+                            <div class='text-left'>
+                                <strong>Drilling:</strong><br>
+                                <small>• SOC:   file expected is .docx</small><br>
+                                <small>• AGOCO: file expected is .pdf</small><br>
+                                <small>• WAHA:  file expected is .xlsx, need to convert original file form pdf to excel</small><br>
+                                <hr class='my-1'>
+                                <strong>Workover:</strong><br>
+                                <small>• SOC:   file expected is .docx</small><br>
+                                <small>• AGOCO: file expected is .pdf</small><br>
+                                <small>• WAHA:  file expected is .pdf</small><br>
+                                <hr class='my-1'>
+                                <strong>Other Info</strong><br>
+                                <small>• company name and report date should be picked carefully, there is no built-in qc for those</small><br>
+                                <small>• it's better to click on Validate Data before saving</small><br>
+                                <small>• Empty DDR & DWR button only clears excel files in the code, its not harmless</small><br>
+                                <small>• WAHA reports data should be QC after using this extractor, Especially check the values of the field name, well name, authorized cost.</small><br>
+                                <small>• Only after all data extracted, inserted and QCed, open PowerBI and refresh the data then Publish to the service</small><br>
+                            </div>">
+                        <i class="fas fa-info-circle"></i> Instructions (Hover Me)
+                    </span>
+                </div>
+
                 <div class="col-sm-2 text-right">
                     <a href="javascript:void(0)" onclick="downloadBoth()" class="btn btn-success btn-sm">Download DDR & DWR</a>
                     <a id="dl-ddr" href="{{ route('extractorInterfaces.downloadSingle', 'DDR.xlsx') }}" style="display:none"></a>
@@ -82,6 +106,11 @@
                 document.getElementById('dl-dwr').click();
             }, 500);
         }
+
+        $(function () {
+            $('[data-toggle="popover"]').popover();
+        });
+
     </script>
 
     <script>

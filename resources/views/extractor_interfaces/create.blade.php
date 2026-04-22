@@ -38,6 +38,7 @@
                                 <small>• Empty DDR & DWR button only clears excel files in the code, its not harmless</small><br>
                                 <small>• WAHA reports data should be QC after using this extractor, Especially check the values of the field name, well name, authorized cost.</small><br>
                                 <small>• Only after all data extracted, inserted and QCed, open PowerBI and refresh the data then Publish to the service</small><br>
+                                <small>• for anyother issues or errors in the extractors, you can always check the laravel logs file in storage->logs->laravel.log </small><br>
                             </div>">
                         <i class="fas fa-info-circle"></i> Instructions (Hover Me)
                     </span>

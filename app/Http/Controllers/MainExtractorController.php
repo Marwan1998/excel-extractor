@@ -165,24 +165,17 @@ class MainExtractorController extends Controller
 
         $AGOCO_fileNames = [
             [
-                'name' => 'app/workover/WORKOVER REPORTS 15-04-2026 .pdf',
-                'date' => '04/15/2026',
+                'name' => 'app/new/WORKOVER REPORTS 01-04-2026 .pdf',
+                'date' => '04/01/2026',
             ],
-            [
-                'name' => 'app/workover/WORKOVER REPORTS 16-04-2026 .pdf',
-                'date' => '04/16/2026',
-            ],
-            [
-                'name' => 'app/workover/WORKOVER REPORTS 17-04-2026 .pdf',
-                'date' => '04/17/2026',
-            ],
-            [
-                'name' => 'app/workover/WORKOVER REPORTS 18-04-2026 .pdf',
-                'date' => '04/18/2026',
-            ],
-
-
-
+            // [
+            //     'name' => 'app/new/WORKOVER REPORTS 02-04-2026 .pdf',
+            //     'date' => '04/02/2026',
+            // ],
+            // [
+            //     'name' => 'app/new/WORKOVER REPORTS 03-04-2026 .pdf',
+            //     'date' => '04/03/2026',
+            // ],
         ];
 
         $WAHA_fileNames = [
@@ -202,9 +195,9 @@ class MainExtractorController extends Controller
         // return $run->runExtraction($WAHA_fileNames);
 
 
-        // return logData($AGOCO_fileNames, AGOCOWellExtractorWorkover::class);
-        // $run = new AGOCOExtractionDumpWorkover();
-        // return $run->runExtraction($AGOCO_fileNames);
+        return logData($AGOCO_fileNames, AGOCOWellExtractorWorkover::class);
+        $run = new AGOCOExtractionDumpWorkover();
+        return $run->runExtraction($AGOCO_fileNames);
 
 
         // return logData($SOC_fileNames, SOCWellExtractorWorkover::class);

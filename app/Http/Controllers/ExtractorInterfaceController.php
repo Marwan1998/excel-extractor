@@ -236,4 +236,14 @@ class ExtractorInterfaceController extends AppBaseController
         return response()->json(['message' => 'DDR and DWR files have been reset.']);
     }
 
+
+    public function downloadSingle2($name)
+    {
+        $path = storage_path('app/' . $name);
+        if (file_exists($path)) {
+            return response()->download($path);
+        }
+        abort(404, "File $name not found");
+    }
+
 }

@@ -48,6 +48,11 @@
                     <a href="javascript:void(0)" onclick="downloadBoth()" class="btn btn-success btn-sm">Download DDR & DWR</a>
                     <a id="dl-ddr" href="{{ route('extractorInterfaces.downloadSingle', 'DDR.xlsx') }}" style="display:none"></a>
                     <a id="dl-dwr" href="{{ route('extractorInterfaces.downloadSingle', 'DWR.xlsx') }}" style="display:none"></a>
+
+                    <br><br>
+                    <a id="dl-ddr" href="{{ route('extractorInterfaces.downloadSingle2', 'DDR.xlsx') }}">Download DDR</a>
+                    <br>
+                    <a id="dl-dwr" href="{{ route('extractorInterfaces.downloadSingle2', 'DWR.xlsx') }}">Download DWR</a>
                 </div>
             </div>
         </div>

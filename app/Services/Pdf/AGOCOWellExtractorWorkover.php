@@ -88,56 +88,43 @@ class AGOCOWellExtractorWorkover
             // ---------------------------------
             // Detect Data Row (UPDATED regex)
             // ---------------------------------
+            // ---------------------------------
             if (preg_match(
-                '/^(\S+)\s+(.+?)\s+(\d+)\s+(\d+)\s+(\d+)\s+([\d,]+)\s+([\d,]+)\s*([A-Z\s\-]*)$/',
+                '/^(\S+)\s+(.+?)\s+(\d+)\s+(\d+)(?:\s+(\d+))?\s+([\d,]+)\s+([\d,]+)\s*([A-Z\s\-]*)$/',
                 $line,
                 $matches
             )) {
 
-                // Save previous row
                 if ($currentRow) {
-                    $currentRow['summary'] = trim($summaryBuffer);
+                    $currentRow['summary'] = $this->cleanSummary(trim($summaryBuffer));
 
-                    // clean summary
-                    $currentRow['summary'] = $this->cleanSummary($currentRow['summary']);
-                    
                     if (!$currentRow['objective']) {
                         $currentRow['objective'] = 'EMPTY';
                     }
 
                     $results[] = $currentRow;
-
-                    // Log::debug('Captured Row', $currentRow);
                 }
 
                 $summaryBuffer = '';
                 $collectSummary = false;
 
-                $operation = trim($matches[8]);
+                $operation = trim($matches[8] ?? '');
 
-                // FIX: handle missing operation type
-                if ($operation === '' || strlen($operation) < 3) {
-                    $pendingOperationType = true;
-                } else {
-                    $pendingOperationType = false;
-                }
+                $pendingOperationType = ($operation === '' || strlen($operation) < 3);
 
                 $currentRow = [
                     'field_name'       => $currentField,
                     'well_name'        => trim($matches[1]),
                     'rig_name'         => trim($matches[2]),
-                    'operating_days'   => (int)$matches[4],
-                    'cumulative_cost'  => (int)str_replace(',', '', $matches[7]),
-                    'objective'   => $operation ?: null,
+                    'operating_days'   => (int) $matches[4],
+                    'cumulative_cost'  => (int) str_replace(',', '', $matches[7]),
+                    'objective'        => $operation ?: null,
                     'summary'          => null,
                 ];
 
-                // normalize
                 if ($currentRow['objective']) {
                     $currentRow['objective'] = str_replace('-', '', $currentRow['objective']);
                 }
-
-                // Log::debug('Parsed Data Row', $currentRow);
 
                 continue;
             }

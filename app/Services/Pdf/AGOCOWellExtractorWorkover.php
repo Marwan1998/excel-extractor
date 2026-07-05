@@ -122,6 +122,20 @@ class AGOCOWellExtractorWorkover
                     'summary'          => null,
                 ];
 
+
+                // -------------------------------------------------------------------------------------------------------------------------------------------------------
+                // Temporary: only extract specific wells
+                // $targetWells = ['G1-NC2','G2-NC100'];
+                // if (!in_array($currentRow['well_name'], $targetWells, true)) {
+                //     $currentRow = null;
+                //     $summaryBuffer = '';
+                //     $collectSummary = false;
+                //     $pendingOperationType = false;
+                //     continue;
+                // }
+                // --------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
                 if ($currentRow['objective']) {
                     $currentRow['objective'] = str_replace('-', '', $currentRow['objective']);
                 }

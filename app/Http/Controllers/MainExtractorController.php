@@ -165,17 +165,23 @@ class MainExtractorController extends Controller
 
         $AGOCO_fileNames = [
             [
-                'name' => 'app/new/WORKOVER REPORTS 01-04-2026 .pdf',
+                'name' => 'app/workover/AGOCO_DAILY WORKOVER SUMMARY REPORT 1-4-2026.pdf',
                 'date' => '04/01/2026',
             ],
-            // [
-            //     'name' => 'app/new/WORKOVER REPORTS 02-04-2026 .pdf',
-            //     'date' => '04/02/2026',
-            // ],
-            // [
-            //     'name' => 'app/new/WORKOVER REPORTS 03-04-2026 .pdf',
-            //     'date' => '04/03/2026',
-            // ],
+            [
+                'name' => 'app/workover/AGOCO_DAILY WORKOVER SUMMARY REPORT 2-4-2026.pdf',
+                'date' => '04/02/2026',
+            ],
+            [
+                'name' => 'app/workover/AGOCO_DAILY WORKOVER SUMMARY REPORT 3-4-2026.pdf',
+                'date' => '04/03/2026',
+            ],
+            [
+                'name' => 'app/workover/AGOCO_DAILY WORKOVER SUMMARY REPORT 4-4-2026.pdf',
+                'date' => '04/04/2026',
+            ],
+
+
         ];
 
         $WAHA_fileNames = [

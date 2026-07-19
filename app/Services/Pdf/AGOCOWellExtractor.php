@@ -94,6 +94,27 @@ class AGOCOWellExtractor
             $records[] = $current;
         }
 
+        foreach ($records as $record) {
+            logd($record, 'before');
+
+            $record['SUMMARY'] = json_encode($record['SUMMARY']);
+
+            $record['CURRENT DEPTH'] = json_encode($record['CURRENT DEPTH']);
+            $record['CUM.COST'] = json_encode($record['CUM.COST']);
+            $record['DAILY COST'] = json_encode($record['DAILY COST']);
+
+            $record['DAY'] = json_encode($record['DAY']);
+            $record['CONTR/RIG NO'] = json_encode($record['CONTR/RIG NO']);
+            $record['WELL NAME'] = json_encode($record['WELL NAME']);
+
+            $record['TD/TARGET'] = json_encode($record['TD/TARGET']);
+            $record['OBJECTIVEDAY'] = json_encode($record['OBJECTIVE']);
+            $record['PROG'] = json_encode($record['PROG']);
+
+
+            logd($record, 'aftere');
+        }
+
         return $records;
     }
 

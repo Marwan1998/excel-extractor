@@ -43,62 +43,35 @@ class MainExtractorController extends Controller
                 'name' => 'app/new/WAHA_DAILY DRILLING SUMMARY REPORT 2-4-2026.xlsx',
                 'date' => '04/02/2026',
             ],
-            [
-                'name' => 'app/new/WAHA_DAILY DRILLING SUMMARY REPORT 2-4-2026.xlsx',
-                'date' => '04/02/2026',
-            ],
-            [
-                'name' => 'app/new/WAHA_DAILY DRILLING SUMMARY REPORT 2-4-2026.xlsx',
-                'date' => '04/02/2026',
-            ],
 
         ];
 
         $SOC_fileNames = [
             [
-                'name' => 'app/new/SOC DAILY DRLG & WO REPORT_APR-20-2026.docx',
-                'date' => '04/20/2026',
+                'name' => 'app/done/SOC DAILY DRLG & WO REPORT_MAR-31-2026...docx',
+                'date' => '07/13/2026',
             ],
-
 
         ];
 
         $AGOCO_fileNames = [
             [
-                'name' => 'app/new/17-04-2026.pdf',
-                'date' => '04/17/2026',
+                'name' => 'app/done/28-03-2026.pdf',
+                'date' => '07/09/2026',
             ],
-            [
-                'name' => 'app/new/18-04-2026.pdf',
-                'date' => '04/18/2026',
-            ],
-            [
-                'name' => 'app/new/19-04-2026.pdf',
-                'date' => '04/19/2026',
-            ],
-
-
         ];
 
         $AOO_fileNames = [
             [
-                'name' => 'app/new/NOC DDR-April-08-2026.pdf',
-                'date' => '04/08/2026',
+                'name' => 'app/new/NOC_DDR_July_10_2026.pdf',
+                'date' => '04/12/2026',
             ],
             [
-                'name' => 'app/new/NOC DDR-April-09-2026.pdf',
-                'date' => '04/09/2026',
+                'name' => 'app/new/NOC_DDR_July_11_2026.pdf',
+                'date' => '04/12/2026',
             ],
             [
-                'name' => 'app/new/NOC DDR-April-10-2026.pdf',
-                'date' => '04/10/2026',
-            ],
-            [
-                'name' => 'app/new/NOC DDR-April-11-2026.pdf',
-                'date' => '04/11/2026',
-            ],
-            [
-                'name' => 'app/new/NOC DDR-April-12-2026.pdf',
+                'name' => 'app/new/NOC_DDR_July_12_2026.pdf',
                 'date' => '04/12/2026',
             ],
 
@@ -117,9 +90,9 @@ class MainExtractorController extends Controller
         // return $run->runExtraction($WAHA_fileNames);
 
 
-        return logData($SOC_fileNames, SOCWellExtractor::class);
-        $run = new SOCExtractionDump();
-        return $run->runExtraction($SOC_fileNames);
+        // return logData($SOC_fileNames, SOCWellExtractor::class);
+        // $run = new SOCExtractionDump();
+        // return $run->runExtraction($SOC_fileNames);
 
         // return logData($AGOCO_fileNames, AGOCOWellExtractor::class);
         // $run = new AGOCOExtractionDump();
@@ -144,20 +117,32 @@ class MainExtractorController extends Controller
 
         $SOC_fileNames = [
             [
-                'name' => 'app/workover/SOC DAILY DRLG & WO REPORT_APR-15-2026.docx',
-                'date' => '04/15/2026',
+                'name' => 'app/workover/SOC DAILY DRLG  WO REPORT_JULY-07-2026.docx',
+                'date' => '07/07/2026',
             ],
             [
-                'name' => 'app/workover/SOC DAILY DRLG & WO REPORT_APR-16-2026.docx',
-                'date' => '04/16/2026',
+                'name' => 'app/workover/SOC DAILY DRLG  WO REPORT_JULY-08-2026.docx',
+                'date' => '07/08/2026',
             ],
             [
-                'name' => 'app/workover/SOC DAILY DRLG & WO REPORT_APR-18-2026.docx',
-                'date' => '04/18/2026',
+                'name' => 'app/workover/SOC DAILY DRLG  WO REPORT_JULY-09-2026.docx',
+                'date' => '07/09/2026',
             ],
             [
-                'name' => 'app/workover/SOC DAILY DRLG & WO REPORT_APR-19-2026.docx',
-                'date' => '04/19/2026',
+                'name' => 'app/workover/SOC DAILY DRLG  WO REPORT_JULY-10-2026.docx',
+                'date' => '07/10/2026',
+            ],
+            [
+                'name' => 'app/workover/SOC DAILY DRLG  WO REPORT_JULY-11-2026.docx',
+                'date' => '07/11/2026',
+            ],
+            [
+                'name' => 'app/workover/SOC DAILY DRLG  WO REPORT_JULY-12-2026.docx',
+                'date' => '07/12/2026',
+            ],
+            [
+                'name' => 'app/workover/SOC DAILY DRLG  WO REPORT_JULY-13-2026.docx',
+                'date' => '07/13/2026',
             ],
 
 
@@ -165,21 +150,18 @@ class MainExtractorController extends Controller
 
         $AGOCO_fileNames = [
             [
-                'name' => 'app/workover/AGOCO_DAILY WORKOVER SUMMARY REPORT 1-4-2026.pdf',
-                'date' => '04/01/2026',
+                'name' => 'app/workover/WORKOVER REPORTS 07-07-2026 .pdf',
+                'date' => '07/07/2026',
             ],
             [
-                'name' => 'app/workover/AGOCO_DAILY WORKOVER SUMMARY REPORT 2-4-2026.pdf',
-                'date' => '04/02/2026',
+                'name' => 'app/workover/WORKOVER REPORTS 11-07-2026 .pdf',
+                'date' => '07/11/2026',
             ],
             [
-                'name' => 'app/workover/AGOCO_DAILY WORKOVER SUMMARY REPORT 3-4-2026.pdf',
-                'date' => '04/03/2026',
+                'name' => 'app/workover/WORKOVER REPORTS 13-07-2026 .pdf',
+                'date' => '07/13/2026',
             ],
-            [
-                'name' => 'app/workover/AGOCO_DAILY WORKOVER SUMMARY REPORT 4-4-2026.pdf',
-                'date' => '04/04/2026',
-            ],
+
 
 
         ];
@@ -201,9 +183,9 @@ class MainExtractorController extends Controller
         // return $run->runExtraction($WAHA_fileNames);
 
 
-        return logData($AGOCO_fileNames, AGOCOWellExtractorWorkover::class);
-        $run = new AGOCOExtractionDumpWorkover();
-        return $run->runExtraction($AGOCO_fileNames);
+        // return logData($AGOCO_fileNames, AGOCOWellExtractorWorkover::class);
+        // $run = new AGOCOExtractionDumpWorkover();
+        // return $run->runExtraction($AGOCO_fileNames);
 
 
         // return logData($SOC_fileNames, SOCWellExtractorWorkover::class);

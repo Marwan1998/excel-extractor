@@ -101,7 +101,7 @@ class MainExtractorController extends Controller
 
         // NOT fully ready, for now, the summary in not being extracted
 
-        return logData($AOO_fileNames, AOOWellExtractor::class);
+        // return logData($AOO_fileNames, AOOWellExtractor::class);
         $run = new AOOExtractionDump();
         return $run->runExtraction($AOO_fileNames);
 

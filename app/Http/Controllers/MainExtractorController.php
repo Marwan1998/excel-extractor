@@ -29,6 +29,11 @@ use App\Services\Pdf\AGOCOWellExtractorWorkover;
 use App\Services\RunExtraction\Workover\AGOCOExtractionDumpWorkover;
 
 
+// AOO
+use App\Services\Pdf\AOOWellExtractorWorkover;
+use App\Services\RunExtraction\Workover\AOOExtractionDumpWorkover;
+
+
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Smalot\PdfParser\Parser;
 
@@ -175,6 +180,23 @@ class MainExtractorController extends Controller
 
         ];
 
+        $AOO_fileNames = [
+            [
+                'name' => 'app/workover/NOC_WOV_July_10_2026.pdf',
+                'date' => '07/10/2026',
+            ],
+            [
+                'name' => 'app/workover/NOC_WOV_July_11_2026.pdf',
+                'date' => '07/11/2026',
+            ],
+            [
+                'name' => 'app/workover/NOC_WOV_July_12_2026.pdf',
+                'date' => '07/12/2026',
+            ],
+
+
+        ];        
+
 
 
 
@@ -196,6 +218,12 @@ class MainExtractorController extends Controller
         // $extractor = new WAHAWellExtractorWorkover();
         // $data = $extractor->extract(storage_path('app/workover/WAHA_DAILY WORKOVER SUMMARY REPORT (NOC) 1-1-2026.pdf'));
         // return($data);
+
+
+        return logData($AOO_fileNames, AOOWellExtractorWorkover::class);
+        $run = new AOOExtractionDumpWorkover();
+        return $run->runExtraction($AOO_fileNames);
+
 
 
         return 'Empty';

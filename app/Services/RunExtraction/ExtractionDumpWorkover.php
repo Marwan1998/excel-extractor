@@ -54,6 +54,17 @@ class ExtractionDumpWorkover
                 $wellName = $record['well_name'];
                 $fieldName = $record['field_name'];
 
+                $days = null;
+                if (isset($record['operating_days'])) {
+                    $days = $record['operating_days'];
+                } elseif (isset($record['report_no'])) {
+                    $days = $record['report_no'];
+                } elseif (isset($record['days'])) {
+                    $days = $record['days'];
+                } else {
+                    $days = null;
+                }
+
                 $buget = str_replace(',', '', $record['budget']??0);
                 $buget = cleanNumericValue($buget);
 
@@ -76,8 +87,7 @@ class ExtractionDumpWorkover
                 $sheet->setCellValue("J{$startRow}", $cumCost ?? 0);
                 $sheet->setCellValue("K{$startRow}", $record['summary'] ?? '');
 
-                $sheet->setCellValue("L{$startRow}", $record['operating_days'] ?? null);
-
+                $sheet->setCellValue("L{$startRow}", $days);
 
                 $startRow++;
             }

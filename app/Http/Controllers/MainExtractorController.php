@@ -37,6 +37,7 @@ use App\Services\RunExtraction\Workover\AOOExtractionDumpWorkover;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Smalot\PdfParser\Parser;
 
+use App\Services\Pdf\AOOWellExtractorDamage;
 
 
 class MainExtractorController extends Controller
@@ -106,7 +107,8 @@ class MainExtractorController extends Controller
 
         // NOT fully ready, for now, the summary in not being extracted
 
-        // return logData($AOO_fileNames, AOOWellExtractor::class);
+        // return logData($AOO_fileNames, AOOWellExtractorDamage::class);
+        return logData($AOO_fileNames, AOOWellExtractor::class);
         $run = new AOOExtractionDump();
         return $run->runExtraction($AOO_fileNames);
 

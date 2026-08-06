@@ -40,10 +40,13 @@ class AOOWellExtractor
 
         $pdf   = $this->parser->parseFile($filePath);
         $lines = [];
+        $pageTexts = [];
 
         // Flatten all pages so cross-page wells are handled transparently.
         foreach ($pdf->getPages() as $page) {
-            $text = str_replace(["\r\n", "\r"], "\n", $page->getText());
+            $rawText = $page->getText();
+            $pageTexts[] = $rawText;
+            $text = str_replace(["\r\n", "\r"], "\n", $rawText);
             foreach (explode("\n", $text) as $line) {
                 $line = trim($line);
                 if ($line !== '') {
@@ -59,6 +62,24 @@ class AOOWellExtractor
         }
 
         $results = $this->parseLines($lines);
+
+        // Some Microsoft Print to PDF reports render correctly but encode every
+        // ordinary byte in Unicode's private-use range. Normal parsing therefore
+        // returns no wells. Only use the recovery layout when both conditions are
+        // true, keeping the established extraction path unchanged for normal PDFs.
+        if ($results === [] && $this->containsPrivateUseCharacters(implode("\n", $pageTexts))) {
+            Log::debug('[AOO] Private-use font encoding detected; using recovery parser');
+
+            $recoveredLines = $this->normalizeDamagedPages($pageTexts);
+
+            if ($this->debug) {
+                foreach ($recoveredLines as $i => $line) {
+                    Log::debug(sprintf('[AOO][RECOVERED] %04d | %s', $i, $line));
+                }
+            }
+
+            $results = $this->parseLines($recoveredLines);
+        }
 
         Log::debug('[AOO] Extractor finished', ['rows' => count($results)]);
 
@@ -307,5 +328,282 @@ class AOOWellExtractor
         $summary = trim(preg_replace('/\s+/', ' ', $buffer));
 
         return $summary !== '' ? $summary : null;
+    }
+
+    // ------------------------------------------------------------------ //
+    //  PRIVATE-USE FONT RECOVERY
+    // ------------------------------------------------------------------ //
+
+    protected function containsPrivateUseCharacters(string $text): bool
+    {
+        return preg_match('/[\x{F000}-\x{F0FF}]/u', $text) === 1;
+    }
+
+    protected function normalizeDamagedPages(array $pageTexts): array
+    {
+        $normalizedLines = [];
+        $currentField = null;
+
+        foreach ($pageTexts as $pageText) {
+            $pageLines = $this->cleanLines(
+                $this->decodePrivateUseCharacters($pageText)
+            );
+            $wellIndexes = $this->findWellIndexes($pageLines);
+
+            if ($wellIndexes === []) {
+                continue;
+            }
+
+            // A report page starts with its field code, before the first well.
+            for ($i = 0; $i < $wellIndexes[0]; $i++) {
+                if ($this->isDamageFieldCode($pageLines[$i])) {
+                    $currentField = $pageLines[$i];
+                }
+            }
+
+            foreach ($wellIndexes as $position => $start) {
+                $end = $wellIndexes[$position + 1] ?? count($pageLines);
+                $block = array_slice($pageLines, $start, $end - $start);
+
+                foreach ($this->normalizeWellBlock($block, $currentField) as $line) {
+                    $normalizedLines[] = $line;
+                }
+            }
+        }
+
+        return $normalizedLines;
+    }
+
+    /**
+     * Microsoft Print to PDF stored byte 0x44 ("D"), for example, as U+F044.
+     * Subtracting U+F000 restores the intended Latin-1 code point losslessly.
+     */
+    protected function decodePrivateUseCharacters(string $text): string
+    {
+        return preg_replace_callback(
+            '/[\x{F000}-\x{F0FF}]/u',
+            static function (array $match): string {
+                $packed = mb_convert_encoding($match[0], 'UCS-4BE', 'UTF-8');
+                $codePoint = unpack('N', $packed)[1] - 0xF000;
+
+                return mb_convert_encoding(pack('N', $codePoint), 'UTF-8', 'UCS-4BE');
+            },
+            $text
+        );
+    }
+
+    protected function cleanLines(string $text): array
+    {
+        $text = str_replace(["\r\n", "\r"], "\n", $text);
+        $lines = [];
+
+        foreach (explode("\n", $text) as $line) {
+            $line = trim(preg_replace('/[\t ]+/u', ' ', $line));
+            if ($line !== '') {
+                $lines[] = $line;
+            }
+        }
+
+        return $lines;
+    }
+
+    protected function findWellIndexes(array $lines): array
+    {
+        $indexes = [];
+
+        foreach ($lines as $index => $line) {
+            if (preg_match('/^Well\s+Name\s*:\s*$/i', $line)) {
+                $indexes[] = $index;
+            }
+        }
+
+        return $indexes;
+    }
+
+    protected function isDamageFieldCode(string $line): bool
+    {
+        return preg_match('/^(?:I&R|NC\d{2,4}|[A-Z]{1,4}\d{2,4})$/', $line) === 1;
+    }
+
+    protected function normalizeWellBlock(array $block, ?string $field): array
+    {
+        $wellName = $block[1] ?? null;
+        $rigName = $this->valueAfterExactLabel($block, 'AFE:');
+        $objectiveIndex = $this->indexContaining($block, 'OBJECTIVE:');
+        $objective = $objectiveIndex !== null && $objectiveIndex > 0
+            ? $block[$objectiveIndex - 1]
+            : null;
+
+        $reportNo = $this->extractReportNumber($block);
+        $spudDate = $this->extractSpudDate($block);
+        $currentDepth = $this->extractNumberBetween($block, 'CURRENT DEPTH:', 'PREVIOUS DEPTH:');
+        $progress = $this->extractNumberBetween($block, 'FOOTAGE:', 'DRILLING HOURS');
+        $cumulativeCost = $this->extractNumberBetween($block, 'DAILY COST:', 'CUM. COST:');
+        $summaryLines = $this->extractSummaryLines($block);
+
+        if ($wellName === null || $wellName === '') {
+            return [];
+        }
+
+        $lines = [];
+        if ($field !== null) {
+            $lines[] = $field;
+        }
+
+        $lines[] = sprintf(
+            'Well Name:%sDATE: Rig Name / NO.: AFE:%s',
+            $wellName,
+            $rigName ?? ''
+        );
+
+        if ($objective !== null) {
+            $lines[] = $objective . 'OBJECTIVE:';
+        }
+        if ($reportNo !== null) {
+            $lines[] = 'REPORT No:' . $reportNo;
+        }
+        if ($spudDate !== null) {
+            $lines[] = 'SPUD DATE:' . $spudDate;
+        }
+        if ($currentDepth !== null) {
+            $lines[] = 'CURRENT DEPTH:' . $currentDepth;
+        }
+        if ($progress !== null) {
+            $lines[] = 'FOOTAGE:' . $progress;
+        }
+        if ($cumulativeCost !== null) {
+            $lines[] = 'DAILY COST:' . $cumulativeCost;
+        }
+
+        $lines[] = 'Present Operations:';
+        foreach ($summaryLines as $summaryLine) {
+            $lines[] = $summaryLine;
+        }
+        $lines[] = 'Oper. Summary:';
+
+        return $lines;
+    }
+
+    protected function valueAfterExactLabel(array $lines, string $label): ?string
+    {
+        foreach ($lines as $index => $line) {
+            if (strcasecmp(trim($line), $label) === 0) {
+                return $lines[$index + 1] ?? null;
+            }
+        }
+
+        return null;
+    }
+
+    protected function indexContaining(array $lines, string $label): ?int
+    {
+        foreach ($lines as $index => $line) {
+            if (stripos($line, $label) !== false) {
+                return $index;
+            }
+        }
+
+        return null;
+    }
+
+    protected function extractReportNumber(array $lines): ?int
+    {
+        $start = $this->indexContaining($lines, 'REPORT No:');
+        if ($start === null) {
+            return null;
+        }
+
+        if (preg_match('/REPORT\s+No\s*:\s*(\d+)/i', $lines[$start], $match)) {
+            return (int) $match[1];
+        }
+
+        $end = $this->nextLabelIndex($lines, $start + 1, ['SPUD DATE:', 'START OPERATION:']);
+        for ($i = $start + 1; $i < $end; $i++) {
+            if (preg_match('/^\s*(\d+)\s*$/', $lines[$i], $match)) {
+                return (int) $match[1];
+            }
+        }
+
+        return null;
+    }
+
+    protected function extractSpudDate(array $lines): ?string
+    {
+        $start = $this->indexContaining($lines, 'SPUD DATE:');
+        if ($start === null) {
+            return null;
+        }
+
+        if (preg_match('/SPUD\s+DATE\s*:\s*(\d{1,2}\/\d{1,2}\/\d{4})/i', $lines[$start], $match)) {
+            return $match[1];
+        }
+
+        // If START OPERATION is on the same line, the spud-date cell is blank.
+        if (stripos(substr($lines[$start], stripos($lines[$start], 'SPUD DATE:') + 10), 'START OPERATION:') !== false) {
+            return null;
+        }
+
+        $end = $this->nextLabelIndex($lines, $start + 1, ['START OPERATION:', 'CURRENT DEPTH:']);
+        for ($i = $start + 1; $i < $end; $i++) {
+            if (preg_match('/\b(\d{1,2}\/\d{1,2}\/\d{4})\b/', $lines[$i], $match)) {
+                return $match[1];
+            }
+        }
+
+        return null;
+    }
+
+    protected function extractNumberBetween(array $lines, string $startLabel, string $endLabel): ?string
+    {
+        $start = $this->indexContaining($lines, $startLabel);
+        if ($start === null) {
+            return null;
+        }
+
+        $end = $this->nextLabelIndex($lines, $start + 1, [$endLabel]);
+        for ($i = $start; $i < $end; $i++) {
+            $line = $i === $start
+                ? substr($lines[$i], stripos($lines[$i], $startLabel) + strlen($startLabel))
+                : $lines[$i];
+
+            if (preg_match('/(?<![\d,])(\d[\d,]*(?:\.\d+)?)(?![\d,])/', $line, $match)) {
+                return str_replace(',', '', $match[1]);
+            }
+        }
+
+        return null;
+    }
+
+    protected function extractSummaryLines(array $lines): array
+    {
+        $start = $this->indexContaining($lines, 'Present Operations:');
+        $end = $this->indexContaining($lines, 'Oper. Summary:');
+
+        if ($start === null || $end === null || $end <= $start + 1) {
+            return [];
+        }
+
+        $summary = array_slice($lines, $start + 1, $end - $start - 1);
+
+        // The first line is the brief Present Operations value. The detailed
+        // operational summary starts on the following line in this layout.
+        array_shift($summary);
+
+        return array_values(array_filter($summary, static function (string $line): bool {
+            return $line !== '';
+        }));
+    }
+
+    protected function nextLabelIndex(array $lines, int $start, array $labels): int
+    {
+        for ($i = $start, $count = count($lines); $i < $count; $i++) {
+            foreach ($labels as $label) {
+                if (stripos($lines[$i], $label) !== false) {
+                    return $i;
+                }
+            }
+        }
+
+        return count($lines);
     }
 }

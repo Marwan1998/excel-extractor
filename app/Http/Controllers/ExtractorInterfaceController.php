@@ -32,13 +32,16 @@ use App\Services\RunExtraction\Workover\SOCExtractionDumpWorkover;
 // Workover - AGOCO
 use App\Services\Pdf\AGOCOWellExtractorWorkover;
 use App\Services\RunExtraction\Workover\AGOCOExtractionDumpWorkover;
+// Workover - AOO
+use App\Services\Pdf\AOOWellExtractorWorkover;
+use App\Services\RunExtraction\Workover\AOOExtractionDumpWorkover;
 
 
 class ExtractorInterfaceController extends AppBaseController
 {
     public function create()
     {
-        $companies = [null => 'Please Select', 'soc' => 'Sirte Oil Company', 'agoco' => 'AGOCO', 'waha' => 'WAHA Oil Company'];//, 'aoo' => 'Akakus'
+        $companies = [null => 'Please Select', 'soc' => 'Sirte Oil Company', 'agoco' => 'AGOCO', 'waha' => 'WAHA Oil Company', 'aoo' => 'Akakus'];
 
         return view('extractor_interfaces.create')->with('companies', $companies);
     }
@@ -101,10 +104,10 @@ class ExtractorInterfaceController extends AppBaseController
                         $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
                         break;
 
-                    // case 'aoo':
-                        // $run = new AOOExtractionDumpWorkover();
-                        // $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
-                    //     break;
+                    case 'aoo':
+                        $run = new AOOExtractionDumpWorkover();
+                        $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
+                        break;
 
                     default:
                         return 'wrong company name selected';

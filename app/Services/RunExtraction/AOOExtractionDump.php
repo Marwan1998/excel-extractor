@@ -13,7 +13,7 @@ class AOOExtractionDump extends ExtractionDump
     public function __construct()
     {
         $this->extractorClass = AOOWellExtractor::class;
-        $this->companyName = 'Akakus Oil Operation';
+        $this->companyName = 'AKAKUS Oil Operations';
         $this->excelDBFileStoragePathName = 'app/DDR.xlsx';
     }
 

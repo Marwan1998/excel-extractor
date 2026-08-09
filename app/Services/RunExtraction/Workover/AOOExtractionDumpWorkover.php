@@ -14,7 +14,7 @@ class AOOExtractionDumpWorkover extends ExtractionDumpWorkover
     public function __construct()
     {
         $this->extractorClass = AOOWellExtractorWorkover::class;
-        $this->companyName = 'Akakus Oil Operation';
+        $this->companyName = 'AKAKUS Oil Operations';
         $this->excelDBFileStoragePathName = 'app/DWR.xlsx';
     }
 

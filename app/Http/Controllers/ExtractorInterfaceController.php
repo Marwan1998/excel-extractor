@@ -11,6 +11,9 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 // Drilling - WAHA
 use App\Services\Excel\WAHAWellExtractor;
 use App\Services\RunExtraction\WAHAExtractionDump;
+//
+use App\Services\Pdf\WAHAWellExtractorPDF;
+use App\Services\RunExtraction\WAHAExtractionDumpPDF;
 // Drilling - SOC
 use App\Services\Word\SOCWellExtractor;
 use App\Services\RunExtraction\SOCExtractionDump;
@@ -41,7 +44,7 @@ class ExtractorInterfaceController extends AppBaseController
 {
     public function create()
     {
-        $companies = [null => 'Please Select', 'soc' => 'Sirte Oil Company', 'agoco' => 'AGOCO', 'waha' => 'WAHA Oil Company', 'aoo' => 'Akakus'];
+        $companies = [null => 'Please Select', 'soc' => 'Sirte Oil Company', 'agoco' => 'AGOCO', 'waha' => 'WAHA Oil Company', 'aoo' => 'Akakus', 'waha_xlsx' => 'WAHA Oil Company - Excel converted'];
 
         return view('extractor_interfaces.create')->with('companies', $companies);
     }
@@ -70,6 +73,12 @@ class ExtractorInterfaceController extends AppBaseController
                         break;
 
                     case 'waha':
+                        $run = new WAHAExtractionDumpPDF();
+                        $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
+                        unlink(storage_path($fullPath)); // Delete temp file
+                        break;
+
+                    case 'waha_xlsx':
                         $run = new WAHAExtractionDump();
                         $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
                         unlink(storage_path($fullPath)); // Delete temp file
@@ -148,6 +157,11 @@ class ExtractorInterfaceController extends AppBaseController
                         break;
 
                     case 'waha':
+                        $data = logData([['name' => $fullPath, 'date' => $input['date'], ]], WAHAWellExtractorPDF::class);   
+                        unlink(storage_path($fullPath)); // Delete temp file
+                        break;
+
+                    case 'waha_xlsx':
                         $data = logData([['name' => $fullPath, 'date' => $input['date'], ]], WAHAWellExtractor::class);   
                         unlink(storage_path($fullPath)); // Delete temp file
                         break;

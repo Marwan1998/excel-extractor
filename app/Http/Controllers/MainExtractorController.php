@@ -2,42 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Smalot\PdfParser\Parser;
+
+
+// ----- Drilling -----
+// WAHA
 use App\Services\Excel\WAHAWellExtractor;
 use App\Services\RunExtraction\WAHAExtractionDump;
 //
+use App\Services\Pdf\WAHAWellExtractorPDF;
+use App\Services\RunExtraction\WAHAExtractionDumpPDF;
+// SOC
 use App\Services\Word\SOCWellExtractor;
 use App\Services\RunExtraction\SOCExtractionDump;
-//
+// AGOCO
 use App\Services\Pdf\AGOCOWellExtractor;
 use App\Services\RunExtraction\AGOCOExtractionDump;
-//
+// AOO
 use App\Services\Pdf\AOOWellExtractor;
 use App\Services\RunExtraction\AOOExtractionDump;
 
-// Workover - WAHA
+// ----- Workover -----
+//  - WAHA
 use App\Services\RunExtraction\Workover\WAHAExtractionDumpWorkover;
 use App\Services\Pdf\WAHAWellExtractorWorkover;
-
 
 // SOC
 use App\Services\Word\SOCWellExtractorWorkover;
 use App\Services\RunExtraction\Workover\SOCExtractionDumpWorkover;
 
-
 // AGOCO
 use App\Services\Pdf\AGOCOWellExtractorWorkover;
 use App\Services\RunExtraction\Workover\AGOCOExtractionDumpWorkover;
-
 
 // AOO
 use App\Services\Pdf\AOOWellExtractorWorkover;
 use App\Services\RunExtraction\Workover\AOOExtractionDumpWorkover;
 
-
-use PhpOffice\PhpSpreadsheet\IOFactory;
-use Smalot\PdfParser\Parser;
-
-use App\Services\Pdf\AOOWellExtractorDamage;
 
 
 class MainExtractorController extends Controller
@@ -46,8 +48,24 @@ class MainExtractorController extends Controller
     {
         $WAHA_fileNames = [
             [
-                'name' => 'app/new/WAHA_DAILY DRILLING SUMMARY REPORT 2-4-2026.xlsx',
-                'date' => '04/02/2026',
+                'name' => 'app/other/WAHA_DAILY DRILLING SUMMARY REPORT (NOC) 2-8-2026.pdf',
+                'date' => '08/02/2026',
+            ],
+            [
+                'name' => 'app/other/WAHA_DAILY DRILLING SUMMARY REPORT (NOC) 3-Aug-2026.pdf',
+                'date' => '08/03/2026',
+            ],
+            [
+                'name' => 'app/other/WAHA_DAILY DRILLING SUMMARY REPORT (NOC) 4-Aug-2026.pdf',
+                'date' => '08/04/2026',
+            ],
+            [
+                'name' => 'app/other/WAHA_DAILY DRILLING SUMMARY REPORT (NOC) 5-8-2026.pdf',
+                'date' => '08/05/2026',
+            ],
+            [
+                'name' => 'app/other/WAHA_DAILY DRILLING SUMMARY REPORT (NOC) 6-Aug-2026.pdf',
+                'date' => '08/06/2026',
             ],
 
         ];
@@ -68,32 +86,56 @@ class MainExtractorController extends Controller
         ];
 
         $AOO_fileNames = [
+            // [
+            //     'name' => 'app/new/NOC_DDR_July_10_2026.pdf',
+            //     'date' => '04/12/2026',
+            // ],
+            // [
+            //     'name' => 'app/new/NOC_DDR_July_11_2026.pdf',
+            //     'date' => '04/12/2026',
+            // ],
+            // [
+            //     'name' => 'app/new/NOC_DDR_July_12_2026.pdf',
+            //     'date' => '04/12/2026',
+            // ],
+
             [
-                'name' => 'app/new/NOC_DDR_July_10_2026.pdf',
-                'date' => '04/12/2026',
+                'name' => 'app/new/NOC_DDR_Agu_02_2026.pdf',
+                'date' => '08/02/2026',
             ],
             [
-                'name' => 'app/new/NOC_DDR_July_11_2026.pdf',
-                'date' => '04/12/2026',
+                'name' => 'app/new/NOC_DDR_Aug_03_2026.pdf',
+                'date' => '08/03/2026',
             ],
             [
-                'name' => 'app/new/NOC_DDR_July_12_2026.pdf',
-                'date' => '04/12/2026',
+                'name' => 'app/new/NOC_DDR_Aug_03_2026.pdf',
+                'date' => '08/03/2026',
+            ],
+            [
+                'name' => 'app/new/NOC_DDR_Aug_04_2026.pdf',
+                'date' => '08/04/2026',
+            ],
+            [
+                'name' => 'app/new/NOC_DDR_Aug_05_2026.pdf',
+                'date' => '08/05/2026',
+            ],
+            [
+                'name' => 'app/new/NOC_DDR_Aug_06_2026.pdf',
+                'date' => '08/06/2026',
             ],
 
         ];
 
 
-        // foreach ($AOO_fileNames as $value) {
-        //     $filePath = storage_path($value['name']);
-        //     logd(['real' => $value['name'], 'Date' => extractDateFromFileName($filePath)]);
-        // }
-        // return 0;
-
-
         // return logData($WAHA_fileNames, WAHAWellExtractor::class);
         // $run = new WAHAExtractionDump();
         // return $run->runExtraction($WAHA_fileNames);
+
+
+        return logData($WAHA_fileNames, WAHAWellExtractorPDF::class);
+        $run = new WAHAExtractionDumpPDF();
+        return $run->runExtraction($WAHA_fileNames);
+
 
 
         // return logData($SOC_fileNames, SOCWellExtractor::class);
@@ -105,12 +147,9 @@ class MainExtractorController extends Controller
         // return $run->runExtraction($AGOCO_fileNames);
 
 
-        // NOT fully ready, for now, the summary in not being extracted
-
-        // return logData($AOO_fileNames, AOOWellExtractorDamage::class);
-        return logData($AOO_fileNames, AOOWellExtractor::class);
-        $run = new AOOExtractionDump();
-        return $run->runExtraction($AOO_fileNames);
+        // return logData($AOO_fileNames, AOOWellExtractor::class);
+        // $run = new AOOExtractionDump();
+        // return $run->runExtraction($AOO_fileNames);
 
 
     }
@@ -183,17 +222,37 @@ class MainExtractorController extends Controller
         ];
 
         $AOO_fileNames = [
+            // [
+            //     'name' => 'app/workover/NOC_WOV_July_10_2026.pdf',
+            //     'date' => '07/10/2026',
+            // ],
+            // [
+            //     'name' => 'app/workover/NOC_WOV_July_11_2026.pdf',
+            //     'date' => '07/11/2026',
+            // ],
+            // [
+            //     'name' => 'app/workover/NOC_WOV_July_12_2026.pdf',
+            //     'date' => '07/12/2026',
+            // ],
             [
-                'name' => 'app/workover/NOC_WOV_July_10_2026.pdf',
-                'date' => '07/10/2026',
+                'name' => 'app/workover/NOC_DWR_Agu_02_2026.pdf',
+                'date' => '08/02/2026',
             ],
             [
-                'name' => 'app/workover/NOC_WOV_July_11_2026.pdf',
-                'date' => '07/11/2026',
+                'name' => 'app/workover/NOC_WOV_Aug_03_2026.pdf',
+                'date' => '08/03/2026',
             ],
             [
-                'name' => 'app/workover/NOC_WOV_July_12_2026.pdf',
-                'date' => '07/12/2026',
+                'name' => 'app/workover/NOC_WOV_Aug_04_2026.pdf',
+                'date' => '08/04/2026',
+            ],
+            [
+                'name' => 'app/workover/NOC_WOV_Aug_05_2026.pdf',
+                'date' => '08/05/2026',
+            ],
+            [
+                'name' => 'app/workover/NOC_WOV_Aug_06_2026.pdf',
+                'date' => '08/06/2026',
             ],
 
 
@@ -202,29 +261,21 @@ class MainExtractorController extends Controller
 
 
 
-        // return logData($WAHA_fileNames, WAHAWellExtractorWorkover::class);
-        // $run = new WAHAExtractionDumpWorkover();
-        // return $run->runExtraction($WAHA_fileNames);
-
+        return logData($WAHA_fileNames, WAHAWellExtractorWorkover::class);
+        $run = new WAHAExtractionDumpWorkover();
+        return $run->runExtraction($WAHA_fileNames);
 
         // return logData($AGOCO_fileNames, AGOCOWellExtractorWorkover::class);
         // $run = new AGOCOExtractionDumpWorkover();
         // return $run->runExtraction($AGOCO_fileNames);
 
-
         // return logData($SOC_fileNames, SOCWellExtractorWorkover::class);
         // $run = new SOCExtractionDumpWorkover();
         // return $run->runExtraction($SOC_fileNames);
 
-
-        // $extractor = new WAHAWellExtractorWorkover();
-        // $data = $extractor->extract(storage_path('app/workover/WAHA_DAILY WORKOVER SUMMARY REPORT (NOC) 1-1-2026.pdf'));
-        // return($data);
-
-
-        return logData($AOO_fileNames, AOOWellExtractorWorkover::class);
-        $run = new AOOExtractionDumpWorkover();
-        return $run->runExtraction($AOO_fileNames);
+        // return logData($AOO_fileNames, AOOWellExtractorWorkover::class);
+        // $run = new AOOExtractionDumpWorkover();
+        // return $run->runExtraction($AOO_fileNames);
 
 
 

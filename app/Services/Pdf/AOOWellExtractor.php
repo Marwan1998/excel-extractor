@@ -314,6 +314,14 @@ class AOOWellExtractor
             $row['well_name'] = trim($m[1]) ?: null;
         }
 
+        // Prefer the well-name suffix over page state. This remains correct when
+        // a field header appears between wells or a well continues on a new page.
+        if (preg_match('/-(NC\d+)\s*$/i', (string) $row['well_name'], $m)) {
+            $row['field_name'] = strtoupper($m[1]);
+        } elseif (stripos((string) $row['well_name'], 'I&R') !== false) {
+            $row['field_name'] = 'I&R';
+        }
+
         // Rig Name: smalot puts the AFE code after "Rig Name / NO.:" and
         // the actual rig name after "AFE:" — columns are swapped.
         if (preg_match('/AFE:\s*(.+?)\s*$/i', $line, $m)) {
@@ -343,32 +351,35 @@ class AOOWellExtractor
     {
         $normalizedLines = [];
         $currentField = null;
+        $allLines = [];
 
+        // Decode and flatten first. A well header can be at the bottom of one
+        // page while its cost and operational summary continue on the next page.
         foreach ($pageTexts as $pageText) {
-            $pageLines = $this->cleanLines(
-                $this->decodePrivateUseCharacters($pageText)
-            );
-            $wellIndexes = $this->findWellIndexes($pageLines);
-
-            if ($wellIndexes === []) {
-                continue;
+            foreach ($this->cleanLines($this->decodePrivateUseCharacters($pageText)) as $line) {
+                $allLines[] = $line;
             }
+        }
 
-            // A report page starts with its field code, before the first well.
-            for ($i = 0; $i < $wellIndexes[0]; $i++) {
-                if ($this->isDamageFieldCode($pageLines[$i])) {
-                    $currentField = $pageLines[$i];
+        $wellIndexes = $this->findWellIndexes($allLines);
+        $scanStart = 0;
+
+        foreach ($wellIndexes as $position => $start) {
+            // Field headers may occur between two wells on the same page.
+            for ($index = $scanStart; $index < $start; $index++) {
+                if ($this->isDamageFieldCode($allLines[$index])) {
+                    $currentField = $allLines[$index];
                 }
             }
 
-            foreach ($wellIndexes as $position => $start) {
-                $end = $wellIndexes[$position + 1] ?? count($pageLines);
-                $block = array_slice($pageLines, $start, $end - $start);
+            $end = $wellIndexes[$position + 1] ?? count($allLines);
+            $block = array_slice($allLines, $start, $end - $start);
 
-                foreach ($this->normalizeWellBlock($block, $currentField) as $line) {
-                    $normalizedLines[] = $line;
-                }
+            foreach ($this->normalizeWellBlock($block, $currentField) as $line) {
+                $normalizedLines[] = $line;
             }
+
+            $scanStart = $start + 1;
         }
 
         return $normalizedLines;

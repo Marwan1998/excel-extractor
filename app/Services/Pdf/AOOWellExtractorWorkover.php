@@ -20,9 +20,12 @@ class AOOWellExtractorWorkover
 
         $pdf = $this->parser->parseFile($filePath);
         $lines = [];
+        $pageTexts = [];
 
         foreach ($pdf->getPages() as $page) {
-            $text = str_replace(["\r\n", "\r"], "\n", $page->getText());
+            $rawText = $page->getText();
+            $pageTexts[] = $rawText;
+            $text = str_replace(["\r\n", "\r"], "\n", $rawText);
 
             foreach (explode("\n", $text) as $line) {
                 $line = trim($line);
@@ -34,6 +37,13 @@ class AOOWellExtractorWorkover
         }
 
         $results = $this->parseLines($lines);
+
+        // Preserve the established parser for normal reports. Only recover when
+        // it found no wells and the PDF has the known private-use font signature.
+        if ($results === [] && $this->containsPrivateUseCharacters(implode("\n", $pageTexts))) {
+            Log::debug('[AOO Workover] Private-use font encoding detected; using recovery parser');
+            $results = $this->parseLines($this->normalizeDamagedPages($pageTexts));
+        }
 
         Log::debug('[AOO Workover] Extractor finished', ['rows' => count($results)]);
 
@@ -98,8 +108,11 @@ class AOOWellExtractorWorkover
             $record['rig_name'] = trim($match[1]) ?: null;
         }
 
-        if ($record['field_name'] === null && preg_match('/-(NC\d+)$/i', (string) $record['well_name'], $match)) {
+        // Prefer the well-name suffix over page state when it is available.
+        if (preg_match('/-(NC\d+)\s*$/i', (string) $record['well_name'], $match)) {
             $record['field_name'] = strtoupper($match[1]);
+        } elseif (stripos((string) $record['well_name'], 'I&R') !== false) {
+            $record['field_name'] = 'I&R';
         }
 
         foreach ($lines as $line) {
@@ -387,5 +400,247 @@ class AOOWellExtractorWorkover
         $text = trim($text);
 
         return $text === '' ? null : $text;
+    }
+
+    // ------------------------------------------------------------------ //
+    //  PRIVATE-USE FONT RECOVERY
+    // ------------------------------------------------------------------ //
+
+    protected function containsPrivateUseCharacters(string $text): bool
+    {
+        return preg_match('/[\x{F000}-\x{F0FF}]/u', $text) === 1;
+    }
+
+    protected function decodePrivateUseCharacters(string $text): string
+    {
+        return preg_replace_callback(
+            '/[\x{F000}-\x{F0FF}]/u',
+            static function (array $match): string {
+                $packed = mb_convert_encoding($match[0], 'UCS-4BE', 'UTF-8');
+                $codePoint = unpack('N', $packed)[1] - 0xF000;
+
+                return mb_convert_encoding(pack('N', $codePoint), 'UTF-8', 'UCS-4BE');
+            },
+            $text
+        );
+    }
+
+    protected function normalizeDamagedPages(array $pageTexts): array
+    {
+        $normalized = [];
+        $currentField = null;
+        $allLines = [];
+
+        // Keep split records intact by segmenting wells only after every decoded
+        // page has been flattened into one continuous report stream.
+        foreach ($pageTexts as $pageText) {
+            foreach ($this->cleanRecoveredLines($this->decodePrivateUseCharacters($pageText)) as $line) {
+                $allLines[] = $line;
+            }
+        }
+
+        $wellIndexes = $this->findRecoveredWellIndexes($allLines);
+        $scanStart = 0;
+
+        foreach ($wellIndexes as $position => $start) {
+            for ($index = $scanStart; $index < $start; $index++) {
+                if ($this->isFieldCodeLine($allLines[$index])) {
+                    $currentField = strtoupper($allLines[$index]);
+                }
+            }
+
+            $end = $wellIndexes[$position + 1] ?? count($allLines);
+            $block = array_slice($allLines, $start, $end - $start);
+
+            foreach ($this->normalizeRecoveredRecord($block, $currentField) as $line) {
+                $normalized[] = $line;
+            }
+
+            $scanStart = $start + 1;
+        }
+
+        return $normalized;
+    }
+
+    protected function cleanRecoveredLines(string $text): array
+    {
+        $text = str_replace(["\r\n", "\r"], "\n", $text);
+        $lines = [];
+
+        foreach (explode("\n", $text) as $line) {
+            $line = trim(preg_replace('/[\t ]+/u', ' ', $line));
+            if ($line !== '') {
+                $lines[] = $line;
+            }
+        }
+
+        return $lines;
+    }
+
+    protected function findRecoveredWellIndexes(array $lines): array
+    {
+        $indexes = [];
+
+        foreach ($lines as $index => $line) {
+            if (preg_match('/^Well\s+Name\s*:\s*$/i', $line)) {
+                $indexes[] = $index;
+            }
+        }
+
+        return $indexes;
+    }
+
+    protected function normalizeRecoveredRecord(array $block, ?string $fieldName): array
+    {
+        $wellName = $block[1] ?? null;
+        $rigName = $this->recoveredValueAfterLabel($block, 'Rig Name / NO.:');
+        $objectiveIndex = $this->recoveredIndexContaining($block, 'OBJECTIVE:');
+        $objective = $objectiveIndex !== null && $objectiveIndex > 0
+            ? $block[$objectiveIndex - 1]
+            : null;
+        [$reportNo, $budget] = $this->extractRecoveredReportAndBudget($block);
+        $cumulativeCost = $this->extractRecoveredNumberBetween($block, 'CUM. COST:', 'DOL / DFS:');
+        $summary = $this->extractRecoveredSummary($block);
+
+        if ($wellName === null || $wellName === '') {
+            return [];
+        }
+
+        $lines = [];
+        if ($fieldName !== null) {
+            $lines[] = $fieldName;
+        }
+
+        $lines[] = sprintf(
+            'DATE: Well Name:%s Rig Name / NO.:%s Event Code:',
+            $wellName,
+            $rigName ?? ''
+        );
+
+        if ($objective !== null) {
+            $lines[] = 'OBJECTIVE: ' . $objective;
+        }
+        if ($reportNo !== null) {
+            $lines[] = 'REPORT No:' . $reportNo;
+        }
+        if ($budget !== null) {
+            $lines[] = 'Estimated Workover Cost:' . $budget;
+        }
+        if ($cumulativeCost !== null) {
+            $lines[] = 'CUM. COST:' . $cumulativeCost;
+        }
+
+        $lines[] = 'Oper. Summary:' . ($summary ?? '');
+        $lines[] = 'Next Operations:';
+
+        return $lines;
+    }
+
+    protected function recoveredValueAfterLabel(array $lines, string $label): ?string
+    {
+        foreach ($lines as $index => $line) {
+            if (strcasecmp(trim($line), $label) === 0) {
+                return $lines[$index + 1] ?? null;
+            }
+        }
+
+        return null;
+    }
+
+    protected function recoveredIndexContaining(array $lines, string $label): ?int
+    {
+        foreach ($lines as $index => $line) {
+            if (stripos($line, $label) !== false) {
+                return $index;
+            }
+        }
+
+        return null;
+    }
+
+    protected function extractRecoveredReportAndBudget(array $lines): array
+    {
+        $start = $this->recoveredIndexContaining($lines, 'REPORT No:');
+        if ($start === null) {
+            return [null, null];
+        }
+
+        $end = $this->nextRecoveredLabelIndex($lines, $start + 1, ['BWPD:']);
+        $text = implode(' ', array_slice($lines, $start, $end - $start));
+
+        if (!preg_match_all('/(?<![A-Za-z])\d[\d,]*(?:\.\d+)?/', $text, $matches)) {
+            return [null, null];
+        }
+
+        $values = $matches[0];
+        $reportNo = (int) str_replace(',', '', $values[0]);
+        $budget = count($values) > 1 ? $this->toNumber(end($values)) : null;
+
+        return [$reportNo, $budget];
+    }
+
+    protected function extractRecoveredNumberBetween(array $lines, string $startLabel, string $endLabel): ?float
+    {
+        $start = $this->recoveredIndexContaining($lines, $startLabel);
+        if ($start === null) {
+            return null;
+        }
+
+        $end = $this->nextRecoveredLabelIndex($lines, $start + 1, [$endLabel]);
+        for ($index = $start; $index < $end; $index++) {
+            $line = $index === $start
+                ? substr($lines[$index], stripos($lines[$index], $startLabel) + strlen($startLabel))
+                : $lines[$index];
+
+            if (preg_match('/(?<![\d,])(\d[\d,]*(?:\.\d+)?)(?![\d,])/', $line, $match)) {
+                return $this->toNumber($match[1]);
+            }
+        }
+
+        return null;
+    }
+
+    protected function extractRecoveredSummary(array $lines): ?string
+    {
+        foreach ($lines as $index => $line) {
+            if (!preg_match('/Oper\.?\s*Summary\s*:/i', $line, $marker, PREG_OFFSET_CAPTURE)) {
+                continue;
+            }
+
+            $parts = [];
+            $markerPosition = $marker[0][1];
+            $beforeMarker = trim(substr($line, 0, $markerPosition));
+
+            if ($beforeMarker !== '' && $this->isNarrativeSummaryLine($beforeMarker)) {
+                array_unshift($parts, $beforeMarker);
+            }
+
+            for ($previous = $index - 1; $previous >= 0; $previous--) {
+                $candidate = trim($lines[$previous]);
+
+                if (!$this->isNarrativeSummaryLine($candidate)) {
+                    break;
+                }
+
+                array_unshift($parts, $candidate);
+            }
+
+            return $this->cleanText(implode(' ', $parts));
+        }
+
+        return null;
+    }
+
+    protected function nextRecoveredLabelIndex(array $lines, int $start, array $labels): int
+    {
+        for ($index = $start, $count = count($lines); $index < $count; $index++) {
+            foreach ($labels as $label) {
+                if (stripos($lines[$index], $label) !== false) {
+                    return $index;
+                }
+            }
+        }
+
+        return count($lines);
     }
 }

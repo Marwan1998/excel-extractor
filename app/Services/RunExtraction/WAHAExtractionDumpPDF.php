@@ -14,7 +14,7 @@ class WAHAExtractionDumpPDF extends ExtractionDump
     {
         $this->extractorClass = WAHAWellExtractorPDF::class;
         $this->companyName = 'Waha Oil Company';
-        $this->excelDBFileStoragePathName = 'app/DDR.xlsx';
+        $this->excelDBFileStoragePathName = (string) config('report_automation.workbooks.drilling', 'storage/app/DDR.xlsx');
     }
 
     public function runExtraction($filesData)
@@ -27,7 +27,7 @@ class WAHAExtractionDumpPDF extends ExtractionDump
             $data = $extractor->extract($filePath);
 
             // 2️⃣ Load DDR.xlsx
-            $ddrPath = storage_path($this->excelDBFileStoragePathName);
+            $ddrPath = $this->resolveWorkbookPathName($this->excelDBFileStoragePathName);
             $spreadsheet = IOFactory::load($ddrPath);
             $sheet = $spreadsheet->getActiveSheet();
 

@@ -13,6 +13,6 @@ class WAHAExtractionDumpWorkover extends ExtractionDumpWorkover
     {
         $this->extractorClass = WAHAWellExtractorWorkover::class;
         $this->companyName = 'WAHA Oil Company';
-        $this->excelDBFileStoragePathName = 'app/DWR.xlsx';
+        $this->excelDBFileStoragePathName = (string) config('report_automation.workbooks.workover', 'storage/app/DWR.xlsx');
     }
 }

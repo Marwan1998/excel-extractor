@@ -15,7 +15,7 @@ class AGOCOExtractionDumpWorkover extends ExtractionDumpWorkover
     {
         $this->extractorClass = AGOCOWellExtractorWorkover::class;
         $this->companyName = 'AGOCO';
-        $this->excelDBFileStoragePathName = 'app/DWR.xlsx';
+        $this->excelDBFileStoragePathName = (string) config('report_automation.workbooks.workover', 'storage/app/DWR.xlsx');
     }
 
 }

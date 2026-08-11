@@ -15,7 +15,7 @@ class AOOExtractionDumpWorkover extends ExtractionDumpWorkover
     {
         $this->extractorClass = AOOWellExtractorWorkover::class;
         $this->companyName = 'AKAKUS Oil Operations';
-        $this->excelDBFileStoragePathName = 'app/DWR.xlsx';
+        $this->excelDBFileStoragePathName = (string) config('report_automation.workbooks.workover', 'storage/app/DWR.xlsx');
     }
 
 

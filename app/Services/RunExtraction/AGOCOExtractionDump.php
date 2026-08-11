@@ -12,6 +12,6 @@ class AGOCOExtractionDump extends ExtractionDump
     {
         $this->extractorClass = AGOCOWellExtractor::class;
         $this->companyName = 'AGOCO';
-        $this->excelDBFileStoragePathName = 'app/DDR.xlsx';
+        $this->excelDBFileStoragePathName = (string) config('report_automation.workbooks.drilling', 'storage/app/DDR.xlsx');
     }
 }

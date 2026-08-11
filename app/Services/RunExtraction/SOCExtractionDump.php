@@ -13,6 +13,6 @@ class SOCExtractionDump extends ExtractionDump
     {
         $this->extractorClass = SOCWellExtractor::class;
         $this->companyName = 'Sirte Oil Company';
-        $this->excelDBFileStoragePathName = 'app/DDR.xlsx';
+        $this->excelDBFileStoragePathName = (string) config('report_automation.workbooks.drilling', 'storage/app/DDR.xlsx');
     }
 }

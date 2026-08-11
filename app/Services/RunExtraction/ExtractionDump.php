@@ -10,6 +10,7 @@ use Carbon\Carbon;
 class ExtractionDump
 {
     use ExpandsExcelTable;
+    use ResolvesWorkbookPath;
 
     public $extractorClass;
     public $companyName;
@@ -33,7 +34,7 @@ class ExtractionDump
             $data = $extractor->extract($filePath);
 
             // 2️⃣ Load DDR.xlsx
-            $ddrPath = storage_path($this->excelDBFileStoragePathName);
+            $ddrPath = $this->resolveWorkbookPathName($this->excelDBFileStoragePathName);
             $spreadsheet = IOFactory::load($ddrPath);
             $sheet = $spreadsheet->getActiveSheet();
 

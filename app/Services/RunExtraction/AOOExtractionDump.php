@@ -14,7 +14,7 @@ class AOOExtractionDump extends ExtractionDump
     {
         $this->extractorClass = AOOWellExtractor::class;
         $this->companyName = 'AKAKUS Oil Operations';
-        $this->excelDBFileStoragePathName = 'app/DDR.xlsx';
+        $this->excelDBFileStoragePathName = (string) config('report_automation.workbooks.drilling', 'storage/app/DDR.xlsx');
     }
 
 
@@ -28,7 +28,7 @@ class AOOExtractionDump extends ExtractionDump
             $data = $extractor->extract($filePath);
 
             // 2️⃣ Load DDR.xlsx
-            $ddrPath = storage_path($this->excelDBFileStoragePathName);
+            $ddrPath = $this->resolveWorkbookPathName($this->excelDBFileStoragePathName);
             $spreadsheet = IOFactory::load($ddrPath);
             $sheet = $spreadsheet->getActiveSheet();
 

@@ -3,6 +3,7 @@
 namespace App\Services\RunExtraction\Workover;
 
 use App\Services\RunExtraction\ExpandsExcelTable;
+use App\Services\RunExtraction\ResolvesWorkbookPath;
 use App\Services\Word\SOCWellExtractorWorkover;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
@@ -10,6 +11,7 @@ use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 class SOCExtractionDumpWorkover
 {
     use ExpandsExcelTable;
+    use ResolvesWorkbookPath;
 
     public $extractorClass;
     public $companyName;
@@ -19,7 +21,7 @@ class SOCExtractionDumpWorkover
     {
         $this->extractorClass = SOCWellExtractorWorkover::class;
         $this->companyName = 'Sirte Oil Company';
-        $this->excelDBFileStoragePathName = 'app/DWR.xlsx';
+        $this->excelDBFileStoragePathName = (string) config('report_automation.workbooks.workover', 'storage/app/DWR.xlsx');
     }
 
 
@@ -33,7 +35,7 @@ class SOCExtractionDumpWorkover
             $data = $extractor->extract($filePath);
 
             // 2️⃣ Load DWR.xlsx
-            $dwrPath = storage_path($this->excelDBFileStoragePathName);
+            $dwrPath = $this->resolveWorkbookPathName($this->excelDBFileStoragePathName);
             $spreadsheet = IOFactory::load($dwrPath);
             $sheet = $spreadsheet->getActiveSheet();
 

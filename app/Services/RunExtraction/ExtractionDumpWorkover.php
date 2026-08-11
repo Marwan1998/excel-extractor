@@ -10,6 +10,7 @@ use Carbon\Carbon;
 class ExtractionDumpWorkover
 {
     use ExpandsExcelTable;
+    use ResolvesWorkbookPath;
 
     public $extractorClass;
     public $companyName;
@@ -35,7 +36,7 @@ class ExtractionDumpWorkover
             $data = $extractor->extract($filePath);
 
             // 2️⃣ Load DWR.xlsx
-            $dwrPath = storage_path($this->excelDBFileStoragePathName);
+            $dwrPath = $this->resolveWorkbookPathName($this->excelDBFileStoragePathName);
             $spreadsheet = IOFactory::load($dwrPath);
             $sheet = $spreadsheet->getActiveSheet();
 

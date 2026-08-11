@@ -104,7 +104,10 @@ class ReportProcessor
                 throw new RuntimeException("The dump class does not define an output workbook: {$dumpClass}");
             }
 
-            $targetWorkbook = storage_path($workbookRelativePath);
+            $targetWorkbook = $this->resolveWorkbookPath(
+                $report['report_type'],
+                $workbookRelativePath
+            );
 
             if (!is_file($targetWorkbook)) {
                 throw new RuntimeException("The output workbook does not exist: {$targetWorkbook}");
@@ -205,11 +208,51 @@ class ReportProcessor
 
     protected function replaceWorkbook(string $workingWorkbook, string $targetWorkbook): void
     {
-        if (!rename($workingWorkbook, $targetWorkbook)) {
+        $temporaryTarget = dirname($targetWorkbook).DIRECTORY_SEPARATOR
+            .'.'.basename($targetWorkbook).'.automation-'.uniqid('', true).'.tmp';
+
+        if (!copy($workingWorkbook, $temporaryTarget)) {
             throw new RuntimeException(
-                "Unable to replace {$targetWorkbook}. It may currently be open in Excel."
+                "Unable to copy the completed workbook beside {$targetWorkbook}."
             );
         }
+
+        try {
+            if (!rename($temporaryTarget, $targetWorkbook)) {
+                throw new RuntimeException(
+                    "Unable to replace {$targetWorkbook}. It may currently be open in Excel."
+                );
+            }
+        } finally {
+            $this->deleteIfExists($temporaryTarget);
+        }
+
+        $this->deleteIfExists($workingWorkbook);
+    }
+
+    protected function resolveWorkbookPath(string $reportType, string $dumpDefault): string
+    {
+        $configuredPath = trim((string) config("report_automation.workbooks.{$reportType}", ''));
+        $path = $configuredPath !== '' ? $configuredPath : $dumpDefault;
+
+        if (preg_match('~^([a-zA-Z]):[\\\\/](.*)$~', $path, $matches)) {
+            $drive = strtolower($matches[1]);
+            $remainder = str_replace('\\', '/', $matches[2]);
+
+            return '/mnt/'.$drive.'/'.ltrim($remainder, '/');
+        }
+
+        if ($path[0] === '/') {
+            return $path;
+        }
+
+        $normalized = str_replace('\\', '/', $path);
+
+        if (strpos($normalized, 'storage/') === 0) {
+            return base_path($normalized);
+        }
+
+        return storage_path($normalized);
     }
 
     protected function pruneBackups(string $targetWorkbook): void

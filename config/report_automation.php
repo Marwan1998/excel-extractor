@@ -26,6 +26,11 @@ return [
         'workover' => env('REPORT_AUTOMATION_WORKOVER_ROOT', ''),
     ],
 
+    'workbooks' => [
+        'drilling' => env('REPORT_AUTOMATION_DDR_PATH', 'storage/app/DDR.xlsx'),
+        'workover' => env('REPORT_AUTOMATION_DWR_PATH', 'storage/app/DWR.xlsx'),
+    ],
+
     'state' => [
         'directory' => storage_path('app/report-automation'),
         'ledger_file' => storage_path('app/report-automation/status.json'),

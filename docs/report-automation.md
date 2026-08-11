@@ -22,10 +22,14 @@ Add the following values to `.env`. Because the command runs inside WSL, use `/m
 REPORT_AUTOMATION_ENABLED=false
 REPORT_AUTOMATION_DRILLING_ROOT="/mnt/c/path/to/Drilling Reports Per Company"
 REPORT_AUTOMATION_WORKOVER_ROOT="/mnt/c/path/to/Workover Reports Per Company"
+REPORT_AUTOMATION_DDR_PATH="storage/app/DDR.xlsx"
+REPORT_AUTOMATION_DWR_PATH="storage/app/DWR.xlsx"
 REPORT_AUTOMATION_STABILITY_SECONDS=120
 REPORT_AUTOMATION_MAXIMUM_ATTEMPTS=3
 REPORT_AUTOMATION_MAXIMUM_BACKUPS=20
 ```
+
+Workbook paths may be Laravel-relative paths such as `storage/app/DDR.xlsx`, absolute WSL paths such as `/mnt/c/Users/.../DDR All.xlsx`, or Windows paths such as `C:/Users/.../DDR All.xlsx`. Forward slashes are recommended for Windows paths in `.env`. Double quotes safely allow spaces and apostrophes in the path.
 
 Then clear cached configuration:
 

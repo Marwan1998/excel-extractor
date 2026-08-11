@@ -2,12 +2,14 @@
 
 namespace App\Services\RunExtraction\Workover;
 
+use App\Services\RunExtraction\ExpandsExcelTable;
 use App\Services\Word\SOCWellExtractorWorkover;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
 class SOCExtractionDumpWorkover
 {
+    use ExpandsExcelTable;
 
     public $extractorClass;
     public $companyName;
@@ -79,6 +81,8 @@ class SOCExtractionDumpWorkover
 
                 $startRow++;
             }
+
+            $this->expandExcelTableToRow($sheet, $startRow - 1, 12);
 
             // 6️⃣ Save back to DWR.xlsx
             $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');

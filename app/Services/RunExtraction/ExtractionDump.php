@@ -9,6 +9,7 @@ use Carbon\Carbon;
 
 class ExtractionDump
 {
+    use ExpandsExcelTable;
 
     public $extractorClass;
     public $companyName;
@@ -93,6 +94,8 @@ class ExtractionDump
 
                 $startRow++;
             }
+
+            $this->expandExcelTableToRow($sheet, $startRow - 1, 14);
 
             // 6️⃣ Save back to DDR.xlsx
             $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');

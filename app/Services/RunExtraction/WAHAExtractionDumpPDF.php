@@ -73,6 +73,8 @@ class WAHAExtractionDumpPDF extends ExtractionDump
                 $startRow++;
             }
 
+            $this->expandExcelTableToRow($sheet, $startRow - 1, 14);
+
             // 6️⃣ Save back to DDR.xlsx
             $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
             $writer->save($ddrPath);

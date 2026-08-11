@@ -9,6 +9,7 @@ use Carbon\Carbon;
 
 class ExtractionDumpWorkover
 {
+    use ExpandsExcelTable;
 
     public $extractorClass;
     public $companyName;
@@ -91,6 +92,8 @@ class ExtractionDumpWorkover
 
                 $startRow++;
             }
+
+            $this->expandExcelTableToRow($sheet, $startRow - 1, 12);
 
             // 6️⃣ Save back to DWR.xlsx
             $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');

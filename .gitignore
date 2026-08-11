@@ -13,5 +13,6 @@ npm-debug.log
 yarn-error.log
 /.idea
 /.vscode
-/storage/app/DDR.xlsx
-/storage/app/DWR.xlsx
+/storage/**
+!/storage/**/
+!/storage/**/.gitignore

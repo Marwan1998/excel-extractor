@@ -34,7 +34,7 @@ return [
     'state' => [
         'directory' => storage_path('app/report-automation'),
         'ledger_file' => storage_path('app/report-automation/status.json'),
-        'event_log_file' => storage_path('app/report-automation/events.log'),
+        'event_log_file' => env('REPORT_AUTOMATION_EVENT_LOG_PATH', storage_path('app/report-automation/events.log')),
         'staging_directory' => storage_path('app/report-automation/staging'),
         'working_directory' => storage_path('app/report-automation/working'),
         'backup_directory' => storage_path('app/report-automation/backups'),

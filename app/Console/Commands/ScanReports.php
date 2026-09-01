@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Services\ReportAutomation\ReportFileDiscovery;
-use App\Services\ReportAutomation\PowerBiJobDispatcher;
 use App\Services\ReportAutomation\ReportProcessor;
 use App\Services\ReportAutomation\ReportStatusStore;
 use Illuminate\Console\Command;
@@ -58,7 +57,6 @@ class ScanReports extends Command
 
             $processor = new ReportProcessor(null, $statusStore);
             $runSummary = [];
-            $completedReports = [];
             $excludedStatus = strtolower(trim((string) $this->option('exclude')));
 
             foreach ($reports as $report) {
@@ -66,9 +64,6 @@ class ScanReports extends Command
                 $status = $result['status'] ?? 'unknown';
                 $runSummary[$status] = ($runSummary[$status] ?? 0) + 1;
 
-                if ($status === ReportStatusStore::STATUS_COMPLETED && !($result['skipped'] ?? false)) {
-                    $completedReports[] = $report;
-                }
 
                 if ($excludedStatus === '' || strtolower($status) !== $excludedStatus) {
                     $this->line(sprintf(
@@ -81,15 +76,6 @@ class ScanReports extends Command
 
             ksort($runSummary);
 
-            if ($completedReports !== [] && ($runSummary[ReportStatusStore::STATUS_FAILED] ?? 0) === 0) {
-                (new PowerBiJobDispatcher(null, $statusStore))->queue($completedReports);
-            } elseif ($completedReports !== []) {
-                $statusStore->appendEvent('power_bi_skipped', [
-                    'reason' => 'One or more report extractions failed.',
-                    'report_count' => count($completedReports),
-                    'report_files' => array_map('basename', array_column($completedReports, 'path')),
-                ]);
-            }
 
             $statusStore->appendEvent('scan_completed', [
                 'dry_run' => false,

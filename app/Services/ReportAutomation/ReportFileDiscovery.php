@@ -102,7 +102,6 @@ class ReportFileDiscovery
             $reportType,
             $pipeline['company'],
             $path,
-            $size,
             $modifiedAt,
         ]));
 

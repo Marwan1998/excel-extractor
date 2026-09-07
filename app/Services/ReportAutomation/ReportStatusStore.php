@@ -68,11 +68,58 @@ class ReportStatusStore
     {
         $record = $this->find($fingerprint);
 
+        return $this->hasHandledStatus($record);
+    }
+
+    public function findHandledReport(array $report): ?array
+    {
+        return $this->withSharedLock(function () use ($report): ?array {
+            $ledger = $this->readLedgerFile();
+            $exact = $ledger['files'][$report['fingerprint']] ?? null;
+
+            if ($this->hasHandledStatus($exact)) {
+                return $exact;
+            }
+
+            $relativePath = $this->normalizeRelativePath((string) ($report['relative_path'] ?? ''));
+            $reportType = strtolower((string) ($report['report_type'] ?? ''));
+            $company = strtoupper((string) ($report['company'] ?? ''));
+            $modifiedAt = (string) ($report['modified_at'] ?? '');
+            $handled = null;
+
+            foreach ($ledger['files'] as $record) {
+                if (!$this->hasHandledStatus($record)
+                    || strtolower((string) ($record['report_type'] ?? '')) !== $reportType
+                    || strtoupper((string) ($record['company'] ?? '')) !== $company
+                    || $this->normalizeRelativePath((string) ($record['relative_path'] ?? '')) !== $relativePath
+                    || (string) ($record['modified_at'] ?? '') !== $modifiedAt
+                ) {
+                    continue;
+                }
+
+                if ($handled === null
+                    || strcmp((string) ($record['updated_at'] ?? ''), (string) ($handled['updated_at'] ?? '')) > 0
+                ) {
+                    $handled = $record;
+                }
+            }
+
+            return $handled;
+        });
+    }
+
+    protected function hasHandledStatus(?array $record): bool
+    {
         return in_array($record['status'] ?? null, [
             self::STATUS_COMPLETED,
             self::STATUS_EMPTY,
             self::STATUS_BASELINED,
         ], true);
+    }
+
+    protected function normalizeRelativePath(string $path): string
+    {
+        return ltrim(str_replace('\\', '/', trim($path)), '/');
     }
 
     public function all(): array

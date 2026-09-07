@@ -38,9 +38,10 @@ class ReportProcessor
         $this->validateReport($report);
         $fingerprint = $report['fingerprint'];
         $existing = $this->statusStore->find($fingerprint);
+        $handled = $this->statusStore->findHandledReport($report);
 
-        if ($this->statusStore->isHandled($fingerprint)) {
-            return array_merge($existing, ['skipped' => true]);
+        if ($handled !== null) {
+            return array_merge($handled, ['skipped' => true]);
         }
 
         $attempts = (int) ($existing['attempts'] ?? 0);

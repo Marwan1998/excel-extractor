@@ -23,6 +23,9 @@ use App\Services\RunExtraction\AGOCOExtractionDump;
 // Drilling - AOO
 use App\Services\Pdf\AOOWellExtractor;
 use App\Services\RunExtraction\AOOExtractionDump;
+// Drilling - NOC consolidated report
+use App\Services\Pdf\NOCWellExtractor;
+use App\Services\RunExtraction\NOCExtractionDump;
 
 
 
@@ -44,7 +47,7 @@ class ExtractorInterfaceController extends AppBaseController
 {
     public function create()
     {
-        $companies = [null => 'Please Select', 'soc' => 'Sirte Oil Company', 'agoco' => 'AGOCO', 'waha' => 'WAHA Oil Company', 'aoo' => 'Akakus', 'waha_xlsx' => 'WAHA Oil Company - Excel converted'];
+        $companies = [null => 'Please Select', 'noc' => 'NOC Consolidated Report', 'soc' => 'Sirte Oil Company', 'agoco' => 'AGOCO', 'waha' => 'WAHA Oil Company', 'aoo' => 'Akakus', 'waha_xlsx' => 'WAHA Oil Company - Excel converted'];
 
         return view('extractor_interfaces.create')->with('companies', $companies);
     }
@@ -86,6 +89,12 @@ class ExtractorInterfaceController extends AppBaseController
 
                     case 'aoo':
                         $run = new AOOExtractionDump();
+                        $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
+                        unlink(storage_path($fullPath)); // Delete temp file
+                        break;
+
+                    case 'noc':
+                        $run = new NOCExtractionDump();
                         $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
                         unlink(storage_path($fullPath)); // Delete temp file
                         break;
@@ -168,6 +177,11 @@ class ExtractorInterfaceController extends AppBaseController
 
                     case 'aoo':
                         $data = logData([['name' => $fullPath, 'date' => $input['date'], ]], AOOWellExtractor::class);   
+                        unlink(storage_path($fullPath)); // Delete temp file
+                        break;
+
+                    case 'noc':
+                        $data = logData([['name' => $fullPath, 'date' => $input['date'], ]], NOCWellExtractor::class);
                         unlink(storage_path($fullPath)); // Delete temp file
                         break;
 

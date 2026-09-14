@@ -41,6 +41,9 @@ use App\Services\RunExtraction\Workover\AGOCOExtractionDumpWorkover;
 // Workover - AOO
 use App\Services\Pdf\AOOWellExtractorWorkover;
 use App\Services\RunExtraction\Workover\AOOExtractionDumpWorkover;
+// Workover - NOC consolidated report
+use App\Services\Pdf\NOCWellExtractorWorkover;
+use App\Services\RunExtraction\Workover\NOCExtractionDumpWorkover;
 
 
 class ExtractorInterfaceController extends AppBaseController
@@ -127,6 +130,12 @@ class ExtractorInterfaceController extends AppBaseController
                         $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
                         break;
 
+                    case 'noc':
+                        $run = new NOCExtractionDumpWorkover();
+                        $dataInserted = $run->runExtraction([['name' => $fullPath, 'date' => $input['date']]]);
+                        unlink(storage_path($fullPath)); // Delete temp file
+                        break;
+
                     default:
                         return 'wrong company name selected';
                         break;
@@ -210,6 +219,11 @@ class ExtractorInterfaceController extends AppBaseController
 
                     case 'aoo':
                         $data = logData([['name' => $fullPath, 'date' => $input['date'], ]], AOOWellExtractorWorkover::class);   
+                        unlink(storage_path($fullPath)); // Delete temp file
+                        break;
+
+                    case 'noc':
+                        $data = logData([['name' => $fullPath, 'date' => $input['date'], ]], NOCWellExtractorWorkover::class);
                         unlink(storage_path($fullPath)); // Delete temp file
                         break;
 

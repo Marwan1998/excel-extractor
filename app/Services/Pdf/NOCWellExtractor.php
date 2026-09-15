@@ -133,9 +133,6 @@ class NOCWellExtractor
 
                 $record['company_name'] = $company;
                 $record['report_date'] = $effectiveReportDate;
-                $record['report_no'] = $effectiveReportDate !== null
-                    ? $this->systemReportNumber($effectiveReportDate)
-                    : null;
                 $records[] = $record;
             }
 
@@ -891,14 +888,6 @@ class NOCWellExtractor
         }
 
         return Carbon::createFromFormat($format, $value)->format('m/d/Y');
-    }
-
-    private function systemReportNumber(string $reportDate): int
-    {
-        $startDate = Carbon::createFromFormat('m/d/Y', '01/01/2026')->startOfDay();
-        $date = Carbon::createFromFormat('m/d/Y', $reportDate)->startOfDay();
-
-        return 366 + (int) $startDate->diffInDays($date, false);
     }
 
     private function numericValue(string $value)

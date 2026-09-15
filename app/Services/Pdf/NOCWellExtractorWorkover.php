@@ -123,7 +123,6 @@ class NOCWellExtractorWorkover
     {
         $record['company_name'] = $company;
         $record['report_date'] = $reportDate;
-        $record['report_no'] = $this->systemReportNumber($reportDate);
 
         return $record;
     }
@@ -783,14 +782,6 @@ class NOCWellExtractorWorkover
         }
 
         throw new RuntimeException('Unsupported NOC workover date: '.$value);
-    }
-
-    private function systemReportNumber(string $reportDate): int
-    {
-        $start = Carbon::createFromFormat('m/d/Y', '01/01/2026')->startOfDay();
-        $date = Carbon::createFromFormat('m/d/Y', $reportDate)->startOfDay();
-
-        return 366 + (int) $start->diffInDays($date, false);
     }
 
     private function numericValue(string $value)

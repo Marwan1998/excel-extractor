@@ -58,7 +58,10 @@ class ReportProcessor
             );
         }
 
-        if ($report['report_date'] === null) {
+        $pipeline = $this->pipelines->resolve($report['report_type'], $report['company']);
+        $usesExtractorDate = ($pipeline['report_date_source'] ?? 'filename') === 'extractor';
+
+        if ($report['report_date'] === null && !$usesExtractorDate) {
             return $this->statusStore->record(
                 $fingerprint,
                 ReportStatusStore::STATUS_FAILED,
@@ -79,7 +82,6 @@ class ReportProcessor
         );
 
         try {
-            $pipeline = $this->pipelines->resolve($report['report_type'], $report['company']);
             $stagedReport = $this->stageReport($report);
             $extractorClass = $pipeline['extractor'];
             $extractor = new $extractorClass();
@@ -95,6 +97,18 @@ class ReportProcessor
                     ReportStatusStore::STATUS_EMPTY,
                     $this->statusDetails($report, $attempts, ['record_count' => 0])
                 );
+            }
+
+            if ($usesExtractorDate) {
+                $reportDate = $data[0]['report_date'] ?? null;
+
+                if (!is_string($reportDate) || trim($reportDate) === '') {
+                    throw new RuntimeException(
+                        "The extractor did not return a report date: {$extractorClass}"
+                    );
+                }
+
+                $report['report_date'] = $reportDate;
             }
 
             $dumpClass = $pipeline['dump'];

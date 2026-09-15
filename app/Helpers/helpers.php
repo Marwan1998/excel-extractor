@@ -3,21 +3,17 @@ use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
 if (!function_exists('getDateId')) {
-    function getDateId($dateString)
+    function getDateId($dateString): ?int
     {
-        // 1. Define the starting point
+        if ($dateString === null || trim((string) $dateString) === '') {
+            return null;
+        }
+
         $startDate = Carbon::createFromFormat('m/d/Y', '01/01/2026')->startOfDay();
         $startId = 366;
-
-        // 2. Parse the incoming date (assuming m/d/Y format based on your examples)
         $inputDate = Carbon::createFromFormat('m/d/Y', $dateString)->startOfDay();
 
-        // 3. Calculate the difference in days
-        // diffInDays returns a positive integer representing the gap
-        $diff = $startDate->diffInDays($inputDate);
-
-        // 4. Return the calculated ID
-        return $startId + (int)$diff;
+        return $startId + (int) $startDate->diffInDays($inputDate, false);
     }
 }
 
@@ -64,19 +60,52 @@ if (!function_exists('logData')) {
 }
 
 if (!function_exists('cleanNumericValue')) {
-    function cleanNumericValue($value)
+    function cleanNumericValue($value, $fallback = null)
     {
-        // Only reject real empties
         if ($value === null || trim((string)$value) === '') {
-            return null;
+            return $fallback;
         }
 
-        // Extract first number (integer or decimal)
-        if (preg_match('/\d+(\.\d+)?/', $value, $matches)) {
-            return $matches[0];
+        if (is_int($value)) {
+            return $value;
         }
 
-        return null;
+        if (is_float($value)) {
+            return is_finite($value) ? $value : $fallback;
+        }
+
+        $normalized = preg_replace('/[,\s\x{00A0}]+/u', '', trim((string) $value));
+        if ($normalized === null || $normalized === '') {
+            return $fallback;
+        }
+
+        $isParenthesizedNegative = preg_match('/^\(.*\)$/', $normalized) === 1;
+
+        if (!preg_match('/[-+]?(?:\d+(?:\.\d+)?|\.\d+)/', $normalized, $matches)) {
+            return $fallback;
+        }
+
+        $number = (float) $matches[0];
+        if ($isParenthesizedNegative && $number > 0) {
+            $number *= -1;
+        }
+
+        return floor($number) === $number ? (int) $number : $number;
+    }
+}
+
+if (!function_exists('cleanWellName')) {
+    function cleanWellName(?string $value, bool $enabled = true): string
+    {
+        $value = trim((string) $value);
+
+        if (!$enabled) {
+            return $value;
+        }
+
+        $value = preg_replace('/\s*-{2,}\s*/u', '-', $value);
+
+        return trim((string) preg_replace('/\s*-\s*/u', '-', (string) $value));
     }
 }
 

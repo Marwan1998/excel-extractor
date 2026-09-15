@@ -6,14 +6,18 @@ use App\Services\Pdf\AOOWellExtractor;
 use App\Services\Pdf\AOOWellExtractorWorkover;
 use App\Services\Pdf\WAHAWellExtractorPDF;
 use App\Services\Pdf\WAHAWellExtractorWorkover;
+use App\Services\Pdf\NOCWellExtractor;
+use App\Services\Pdf\NOCWellExtractorWorkover;
 use App\Services\RunExtraction\AGOCOExtractionDump;
 use App\Services\RunExtraction\AOOExtractionDump;
 use App\Services\RunExtraction\SOCExtractionDump;
 use App\Services\RunExtraction\WAHAExtractionDumpPDF;
+use App\Services\RunExtraction\NOCExtractionDump;
 use App\Services\RunExtraction\Workover\AGOCOExtractionDumpWorkover;
 use App\Services\RunExtraction\Workover\AOOExtractionDumpWorkover;
 use App\Services\RunExtraction\Workover\SOCExtractionDumpWorkover;
 use App\Services\RunExtraction\Workover\WAHAExtractionDumpWorkover;
+use App\Services\RunExtraction\Workover\NOCExtractionDumpWorkover;
 use App\Services\Word\SOCWellExtractor;
 use App\Services\Word\SOCWellExtractorWorkover;
 
@@ -73,6 +77,13 @@ return [
                 'dump' => WAHAExtractionDumpPDF::class,
                 'extensions' => ['pdf'],
             ],
+            'NOC REPORTS' => [
+                'extractor' => NOCWellExtractor::class,
+                'dump' => NOCExtractionDump::class,
+                'extensions' => ['pdf'],
+                'report_date_source' => 'extractor',
+                'manual_only' => true,
+            ],
         ],
 
         'workover' => [
@@ -95,6 +106,13 @@ return [
                 'extractor' => WAHAWellExtractorWorkover::class,
                 'dump' => WAHAExtractionDumpWorkover::class,
                 'extensions' => ['pdf'],
+            ],
+            'NOC REPORTS' => [
+                'extractor' => NOCWellExtractorWorkover::class,
+                'dump' => NOCExtractionDumpWorkover::class,
+                'extensions' => ['pdf'],
+                'report_date_source' => 'extractor',
+                'manual_only' => true,
             ],
         ],
     ],

@@ -15,18 +15,21 @@ class ReportFileDiscovery
     protected ReportDateParser $dateParser;
     protected array $roots;
     protected int $stabilitySeconds;
+    protected bool $manualOnly;
 
     public function __construct(
         ?ReportPipelineRegistry $pipelines = null,
         ?ReportDateParser $dateParser = null,
         ?array $roots = null,
-        ?int $stabilitySeconds = null
+        ?int $stabilitySeconds = null,
+        bool $manualOnly = false
     ) {
         $this->pipelines = $pipelines ?? new ReportPipelineRegistry();
         $this->dateParser = $dateParser ?? new ReportDateParser();
         $this->roots = $roots ?? config('report_automation.roots', []);
         $this->stabilitySeconds = $stabilitySeconds
             ?? (int) config('report_automation.scan.stability_seconds', 120);
+        $this->manualOnly = $manualOnly;
     }
 
     public function discover(): array
@@ -88,6 +91,10 @@ class ReportFileDiscovery
         try {
             $pipeline = $this->pipelines->resolve($reportType, $companyFolder);
         } catch (InvalidArgumentException $exception) {
+            return null;
+        }
+
+        if ((bool) ($pipeline['manual_only'] ?? false) !== $this->manualOnly) {
             return null;
         }
 

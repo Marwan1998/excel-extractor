@@ -798,8 +798,8 @@ class NOCWellExtractor
         $companies = [
             'AKAKUS OIL OPERATIONS' => 'AKAKUS Oil Operations',
             'ARABIAN GULF OIL COMPANY' => 'AGOCO',
-            'HAROUGE OIL OPERATIONS' => 'HOG',
-            'HAROUGE OIL COMPANY' => 'HOG',
+            'HAROUGE OIL OPERATIONS' => 'HOO',
+            'HAROUGE OIL COMPANY' => 'HOO',
             'SARIR OIL OPERATIONS' => 'SOO',
             'SARIR OIL OPERATION' => 'SOO',
             'SARIR OIL OPERATION B V' => 'SOO',

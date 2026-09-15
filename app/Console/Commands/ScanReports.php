@@ -45,8 +45,10 @@ class ScanReports extends Command
                 $reports = array_slice($reports, 0, $limit);
             }
 
+            $processor = new ReportProcessor(null, $statusStore);
+
             if ($this->option('dry-run')) {
-                $this->displayDiscoveredReports($reports);
+                $this->displayDiscoveredReports($reports, $processor);
                 $statusStore->appendEvent('scan_completed', [
                     'dry_run' => true,
                     'discovered' => count($reports),
@@ -55,7 +57,6 @@ class ScanReports extends Command
                 return 0;
             }
 
-            $processor = new ReportProcessor(null, $statusStore);
             $runSummary = [];
             $excludedStatus = strtolower(trim((string) $this->option('exclude')));
 
@@ -120,22 +121,28 @@ class ScanReports extends Command
         return $handle;
     }
 
-    protected function displayDiscoveredReports(array $reports): void
+    protected function displayDiscoveredReports(array $reports, ReportProcessor $processor): void
     {
         $rows = [];
+        $willProcess = 0;
 
         foreach ($reports as $report) {
+            $preview = $processor->preview($report);
+            $willProcess += $preview['will_process'] ? 1 : 0;
+
             $rows[] = [
                 $report['report_type'],
                 $report['company'],
                 $report['report_date'] ?? 'UNKNOWN',
                 $report['stable'] ? 'yes' : 'no',
+                $preview['action'],
                 $report['relative_path'],
             ];
         }
 
-        $this->table(['Type', 'Company', 'Date', 'Stable', 'File'], $rows);
+        $this->table(['Type', 'Company', 'Date', 'Stable', 'Next Run', 'File'], $rows);
         $this->info('Discovered '.count($reports).' supported report file(s).');
+        $this->info("A normal run would attempt extraction and insertion for {$willProcess} file(s).");
     }
 
     protected function displaySummary(array $summary, int $discovered): void

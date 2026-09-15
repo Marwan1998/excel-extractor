@@ -183,6 +183,53 @@ class ReportProcessor
         }
     }
 
+    public function preview(array $report): array
+    {
+        $this->validateReport($report);
+        $existing = $this->statusStore->find($report['fingerprint']);
+        $handled = $this->statusStore->findHandledReport($report);
+
+        if ($handled !== null) {
+            return [
+                'will_process' => false,
+                'action' => 'SKIP ('.strtoupper((string) $handled['status']).')',
+            ];
+        }
+
+        $attempts = (int) ($existing['attempts'] ?? 0);
+
+        if (($existing['status'] ?? null) === ReportStatusStore::STATUS_FAILED
+            && $attempts >= $this->maximumAttempts
+        ) {
+            return [
+                'will_process' => false,
+                'action' => 'SKIP (RETRY LIMIT)',
+            ];
+        }
+
+        if (!$report['stable']) {
+            return [
+                'will_process' => false,
+                'action' => 'WAIT (UNSTABLE)',
+            ];
+        }
+
+        $pipeline = $this->pipelines->resolve($report['report_type'], $report['company']);
+        $usesExtractorDate = ($pipeline['report_date_source'] ?? 'filename') === 'extractor';
+
+        if ($report['report_date'] === null && !$usesExtractorDate) {
+            return [
+                'will_process' => false,
+                'action' => 'FAIL (DATE UNKNOWN)',
+            ];
+        }
+
+        return [
+            'will_process' => true,
+            'action' => 'EXTRACT + INSERT',
+        ];
+    }
+
     protected function stageReport(array $report): string
     {
         $extension = $report['extension'] !== '' ? '.'.$report['extension'] : '';

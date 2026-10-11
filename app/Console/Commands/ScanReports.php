@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Services\ReportAutomation\ReportFileDiscovery;
 use App\Services\ReportAutomation\ReportProcessor;
 use App\Services\ReportAutomation\ReportStatusStore;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use RuntimeException;
 use Throwable;
@@ -15,6 +16,7 @@ class ScanReports extends Command
                             {--dry-run : Discover files without processing them}
                             {--limit=0 : Maximum number of discovered files to inspect}
                             {--exclude= : Exclude one status from per-file terminal output}
+                            {--exclude-prev-months : Exclude report folders before the current month}
                             {--force : Run even when automation is disabled}';
 
     protected $description = 'Discover and process new drilling and workover reports';
@@ -38,7 +40,14 @@ class ScanReports extends Command
 
         try {
             $statusStore->appendEvent('scan_started', ['dry_run' => (bool) $this->option('dry-run')]);
-            $reports = (new ReportFileDiscovery())->discover();
+            $minimumMonth = null;
+
+            if ($this->option('exclude-prev-months')) {
+                $minimumMonth = Carbon::now()->startOfMonth();
+                $this->displayExcludedMonths($minimumMonth);
+            }
+
+            $reports = (new ReportFileDiscovery(null, null, null, null, false, $minimumMonth))->discover();
             $limit = max(0, (int) $this->option('limit'));
 
             if ($limit > 0) {
@@ -155,5 +164,23 @@ class ScanReports extends Command
 
         $this->table(['Status', 'Count'], $rows);
         $this->info("Scan finished. {$discovered} supported report file(s) inspected.");
+    }
+
+    protected function displayExcludedMonths(Carbon $minimumMonth): void
+    {
+        $months = [];
+
+        for ($month = 1; $month < $minimumMonth->month; $month++) {
+            $months[] = Carbon::create($minimumMonth->year, $month, 1)->format('F');
+        }
+
+        $currentYearMonths = $months === [] ? 'none' : implode(', ', $months);
+
+        $this->info(sprintf(
+            'Excluded: all years before %1$d and %2$s %1$d. Included from %3$s onward.',
+            $minimumMonth->year,
+            $currentYearMonths,
+            $minimumMonth->format('F Y')
+        ));
     }
 }

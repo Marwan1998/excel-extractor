@@ -2,8 +2,10 @@
 
 namespace App\Services\ReportAutomation;
 
+use DateTimeInterface;
 use FilesystemIterator;
 use InvalidArgumentException;
+use RecursiveCallbackFilterIterator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use RuntimeException;
@@ -16,13 +18,15 @@ class ReportFileDiscovery
     protected array $roots;
     protected int $stabilitySeconds;
     protected bool $manualOnly;
+    protected ?string $minimumMonth;
 
     public function __construct(
         ?ReportPipelineRegistry $pipelines = null,
         ?ReportDateParser $dateParser = null,
         ?array $roots = null,
         ?int $stabilitySeconds = null,
-        bool $manualOnly = false
+        bool $manualOnly = false,
+        ?DateTimeInterface $minimumMonth = null
     ) {
         $this->pipelines = $pipelines ?? new ReportPipelineRegistry();
         $this->dateParser = $dateParser ?? new ReportDateParser();
@@ -30,6 +34,7 @@ class ReportFileDiscovery
         $this->stabilitySeconds = $stabilitySeconds
             ?? (int) config('report_automation.scan.stability_seconds', 120);
         $this->manualOnly = $manualOnly;
+        $this->minimumMonth = $minimumMonth !== null ? $minimumMonth->format('Y-m') : null;
     }
 
     public function discover(): array
@@ -72,10 +77,79 @@ class ReportFileDiscovery
 
     protected function filesIn(string $root): RecursiveIteratorIterator
     {
+        $directory = new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS);
+        $filtered = new RecursiveCallbackFilterIterator(
+            $directory,
+            function (SplFileInfo $item) use ($root): bool {
+                return !$item->isDir() || !$this->isExcludedMonthDirectory($root, $item->getPathname());
+            }
+        );
+
         return new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($root, FilesystemIterator::SKIP_DOTS),
+            $filtered,
             RecursiveIteratorIterator::LEAVES_ONLY
         );
+    }
+
+    protected function isExcludedMonthDirectory(string $root, string $directory): bool
+    {
+        if ($this->minimumMonth === null) {
+            return false;
+        }
+
+        $relativePath = ltrim(
+            substr($directory, strlen(rtrim($root, DIRECTORY_SEPARATOR))),
+            DIRECTORY_SEPARATOR
+        );
+        $parts = preg_split('~[\\/]~', $relativePath);
+
+        if (!is_array($parts) || count($parts) < 2) {
+            return false;
+        }
+
+        $cutoffYear = (int) substr($this->minimumMonth, 0, 4);
+        $yearFolder = (string) ($parts[1] ?? '');
+
+        if (count($parts) === 2 && preg_match('/^\d{4}$/', $yearFolder)) {
+            return (int) $yearFolder < $cutoffYear;
+        }
+
+        if (count($parts) !== 3) {
+            return false;
+        }
+
+        $folderMonth = $this->parseMonthFolder((string) $parts[2]);
+
+        return $folderMonth !== null && strcmp($folderMonth, $this->minimumMonth) < 0;
+    }
+
+    protected function parseMonthFolder(string $folder): ?string
+    {
+        if (!preg_match('/^([A-Za-z]+)[\s_-]+(\d{4})$/', trim($folder), $matches)) {
+            return null;
+        }
+
+        $months = [
+            'jan' => 1,
+            'feb' => 2,
+            'mar' => 3,
+            'apr' => 4,
+            'may' => 5,
+            'jun' => 6,
+            'jul' => 7,
+            'aug' => 8,
+            'sep' => 9,
+            'oct' => 10,
+            'nov' => 11,
+            'dec' => 12,
+        ];
+        $month = $months[strtolower(substr($matches[1], 0, 3))] ?? null;
+
+        if ($month === null) {
+            return null;
+        }
+
+        return sprintf('%04d-%02d', (int) $matches[2], $month);
     }
 
     protected function describeFile(string $reportType, string $root, SplFileInfo $file): ?array

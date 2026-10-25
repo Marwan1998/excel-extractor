@@ -16,10 +16,18 @@ class AGOCOWellExtractorWorkover
 
     public function extract(string $filePath): array
     {
-        Log::debug('AGOCO Workover Extractor Started', ['file' => $filePath]);
-
         $pdf = $this->parser->parseFile($filePath);
         $text = $pdf->getText();
+        try {
+            $positionedRows = $this->positionedWellRigRows($pdf);
+        } catch (\Throwable $exception) {
+            Log::warning('AGOCO Workover PDF positions unavailable; using text extraction', [
+                'file' => $filePath,
+                'error' => $exception->getMessage(),
+            ]);
+            $positionedRows = [];
+        }
+        $positionedRowIndex = 0;
 
         $lines = preg_split('/\r\n|\r|\n/', $text);
 
@@ -89,11 +97,29 @@ class AGOCOWellExtractorWorkover
             // Detect Data Row (UPDATED regex)
             // ---------------------------------
             // ---------------------------------
+            // Prefer the PDF's actual well/rig cells to text that may merge them.
+            if (isset($positionedRows[$positionedRowIndex])
+                && preg_match('/^(.+?)(\s+\d+\s+\d+(?:\s+\d+)?\s+[\d,]+\s+[\d,]+\s*[A-Z\s\-]*)$/', $line, $rowParts)
+            ) {
+                [$well, $rig] = $positionedRows[$positionedRowIndex];
+                if ($this->compactRowIdentity($rowParts[1]) === $this->compactRowIdentity($well . $rig)) {
+                    $line = $well . ' ' . $rig . $rowParts[2];
+                }
+            }
+
+            // Retain text-only recovery when a positional match is unavailable.
+            $line = preg_replace(
+                '/^(\S+?)([A-Z]{2,}#\d+)(?=\s+\d+\s+\d+\s+\d+\s+[\d,]+\s+[\d,]+)/',
+                '$1 $2',
+                $line
+            );
+
             if (preg_match(
                 '/^(\S+)\s+(.+?)\s+(\d+)\s+(\d+)(?:\s+(\d+))?\s+([\d,]+)\s+([\d,]+)\s*([A-Z\s\-]*)$/',
                 $line,
                 $matches
             )) {
+                $positionedRowIndex++;
 
                 if ($currentRow) {
                     $currentRow['summary'] = $this->cleanSummary(trim($summaryBuffer));
@@ -243,13 +269,58 @@ class AGOCOWellExtractorWorkover
         return $results;
     }
 
+    private function compactRowIdentity(string $value): string
+    {
+        return strtoupper(preg_replace('/\s+/u', '', $value));
+    }
+
+    /**
+     * Read well and rig cells from their positions, irrespective of rig format.
+     */
+    private function positionedWellRigRows(\Smalot\PdfParser\Document $pdf): array
+    {
+        $rows = [];
+
+        foreach ($pdf->getPages() as $page) {
+            $lines = [];
+            foreach ($page->getDataTm() as $item) {
+                $value = trim($item[1] ?? '');
+                if ($value === '') {
+                    continue;
+                }
+
+                $matrix = $item[0];
+                $y = sprintf('%.1f', (float) $matrix[5]);
+                $lines[$y][] = [(float) $matrix[4], $value];
+            }
+
+            foreach ($lines as $cells) {
+                usort($cells, static function (array $a, array $b): int {
+                    return $a[0] <=> $b[0];
+                });
+
+                if (count($cells) < 4
+                    || $cells[0][0] >= 50
+                    || $cells[1][0] <= 50
+                    || $cells[1][0] >= 180
+                    || !preg_match('/^\d+$/', $cells[2][1])
+                    || !preg_match('/^\d+$/', $cells[3][1])
+                ) {
+                    continue;
+                }
+
+                $rows[] = [$cells[0][1], $cells[1][1]];
+            }
+        }
+
+        return $rows;
+    }
+
     public function cleanSummary($summary)
     {
         $cleanSummary = $summary;
 
         $cleanSummary = preg_replace('/\s+/', ' ', $cleanSummary);
-        $cleanSummary = preg_replace('/,\s*,/', ',', $cleanSummary);
-        $cleanSummary = str_replace('"', '\"', $cleanSummary);
 
         return $cleanSummary;
     }

@@ -36,8 +36,6 @@ class AOOWellExtractor
 
     public function extract(string $filePath): array
     {
-        Log::debug('[AOO] Extractor started', ['file' => $filePath]);
-
         $pdf   = $this->parser->parseFile($filePath);
         $lines = [];
         $pageTexts = [];
@@ -80,8 +78,6 @@ class AOOWellExtractor
 
             $results = $this->parseLines($recoveredLines);
         }
-
-        Log::debug('[AOO] Extractor finished', ['rows' => count($results)]);
 
         return $results;
     }

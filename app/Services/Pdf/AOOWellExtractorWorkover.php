@@ -16,8 +16,6 @@ class AOOWellExtractorWorkover
 
     public function extract(string $filePath): array
     {
-        Log::debug('[AOO Workover] Extractor started', ['file' => $filePath]);
-
         $pdf = $this->parser->parseFile($filePath);
         $lines = [];
         $pageTexts = [];
@@ -44,8 +42,6 @@ class AOOWellExtractorWorkover
             Log::debug('[AOO Workover] Private-use font encoding detected; using recovery parser');
             $results = $this->parseLines($this->normalizeDamagedPages($pageTexts));
         }
-
-        Log::debug('[AOO Workover] Extractor finished', ['rows' => count($results)]);
 
         return $results;
     }

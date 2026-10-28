@@ -90,11 +90,8 @@ class SOCExtractionDumpWorkover
             $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
             $writer->save($dwrPath);
 
-            \Log::debug('Count', [$value['name'] => count($data), 'report-done' => $value]);
             array_push($dataAdded, ['file-name' => $value['name'], 'count' => count($data), 'report-done' => $value]);
         }
-
-        \Log::info('Done inserting DWR successfully');
 
         return $dataAdded;
     }

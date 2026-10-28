@@ -18,8 +18,6 @@ class SOCWellExtractorWorkover
 
     public function extract(string $filePath): array
     {
-        Log::debug('DOCX extractor started', ['file' => $filePath]);
-
         $phpWord = IOFactory::load($filePath);
         $records = [];
         $startExtraction = false;

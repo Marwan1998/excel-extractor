@@ -83,8 +83,6 @@ class WAHAExtractionDumpPDF extends ExtractionDump
             array_push($dataAdded, ['file-name' => $value['name'], 'count' => count($data), 'date' => $value['date']]);
         }
 
-        \Log::info('Done inserting DDR successfully');
-
         return $dataAdded;
     }
 

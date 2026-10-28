@@ -22,8 +22,6 @@ class SOCWellExtractor
 
     public function extract(string $filePath): array
     {
-        Log::debug('DOCX extractor started', ['file' => $filePath]);
-
         $phpWord = IOFactory::load($filePath);
         $records = [];
         $stopExtraction = false;
@@ -44,9 +42,6 @@ class SOCWellExtractor
 
                     // 🛑 STOP EVERYTHING CONDITION
                     if ($this->containsStopKeyword($currentRowText)) {
-                        Log::debug('STOP keyword detected. Extraction halted.', [
-                            'row' => $currentRowText
-                        ]);
                         $stopExtraction = true;
                         break 2; // exit rows + tables
                     }
@@ -55,8 +50,6 @@ class SOCWellExtractor
                     if (!$this->isKeysRow($currentRowText)) {
                         continue;
                     }
-
-                    // Log::debug('Keys row detected', $currentRowText);
 
                     // ---------- ROW 2: VALUES ----------
                     $valueRow   = $this->getRowText($rows[$i + 1] ?? null);
@@ -94,7 +87,6 @@ class SOCWellExtractor
                         }
                     }
 
-                    // Log::debug('Record built', $record);
                     $records[] = $record;
 
                     // Skip consumed rows
@@ -102,11 +94,6 @@ class SOCWellExtractor
                 }
             }
         }
-
-        Log::debug('DOCX extraction completed', [
-            'records' => count($records),
-            'stopped' => $stopExtraction
-        ]);
 
         return $records;
     }

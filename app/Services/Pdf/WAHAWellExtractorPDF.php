@@ -20,8 +20,6 @@ class WAHAWellExtractorPDF
 
     public function extract(string $filePath): array
     {
-        Log::debug('[WAHA PDF] Extractor started', ['file' => $filePath]);
-
         $pdf = $this->parser->parseFile($filePath);
         $lines = [];
 
@@ -43,8 +41,6 @@ class WAHAWellExtractorPDF
         foreach ($this->splitRecords($lines) as $record) {
             $results[] = $this->parseRecord($record['field_name'], $record['lines']);
         }
-
-        Log::debug('[WAHA PDF] Extractor finished', ['rows' => count($results)]);
 
         return $results;
     }

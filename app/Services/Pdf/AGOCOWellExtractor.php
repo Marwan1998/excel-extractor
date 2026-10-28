@@ -16,8 +16,6 @@ class AGOCOWellExtractor
 
     public function extract(string $filePath): array
     {
-        Log::debug('PDF extractor started', ['file' => $filePath]);
-
         $pdf = $this->parser->parseFile($filePath);
         $lines = [];
 

@@ -104,8 +104,6 @@ class ExtractionDumpWorkover
             array_push($dataAdded, ['file-name' => $value['name'], 'count' => count($data), 'date' => $value['date']]);
         }
 
-        \Log::info('Done inserting DWR successfully');
-
         return $dataAdded;
     }
 

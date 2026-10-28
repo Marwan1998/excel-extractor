@@ -809,9 +809,11 @@ class NOCWellExtractor
             'MELLITAH OIL AND GAS' => 'MOG',
             'MELLITAH OIL GAS' => 'MOG',
             'REPSOL EXP MURZUQ S A' => 'Repsol Exp. Murzuq S.A',
+            'ZALLAF CO' => 'Zallaf Oil and Gas',
             'ENI NORTH AFRICA BP' => 'ENI North Africa & BP',
             'ENI NORTH AFRICA' => 'ENI North Africa',
             'SIPEX SONATRACH' => 'SIPEX (Sonatrach)',
+            'SIPEX' => 'SIPEX (Sonatrach)',
             'ARKENU' => 'ARKENU',
         ];
 

@@ -35,6 +35,7 @@ class NOCWellExtractorWorkover
         $records = [];
         $currentCompany = null;
         $currentColumns = self::STANDARD_COLUMNS;
+        $remarkContinuationCompany = null;
 
         foreach ($pages as &$page) {
             $page['lines'] = $this->buildLines($page['words']);
@@ -102,7 +103,7 @@ class NOCWellExtractorWorkover
                 $records[] = $this->withReportMetadata($record, $company, $effectiveReportDate);
             }
 
-            foreach ($this->extractGeneralRemarkRecords($page['lines']) as $record) {
+            foreach ($this->extractGeneralRemarkRecords($page['lines'], $remarkContinuationCompany) as $record) {
                 $company = $record['company_name'];
                 unset($record['company_name']);
                 $records[] = $this->withReportMetadata($record, $company, $effectiveReportDate);
@@ -548,12 +549,13 @@ class NOCWellExtractorWorkover
         ];
     }
 
-    private function extractGeneralRemarkRecords(array $lines): array
+    private function extractGeneralRemarkRecords(array $lines, ?string &$continuationCompany): array
     {
         $inRemarks = false;
         $entries = [];
         $current = null;
-        $currentCompany = null;
+        $currentCompany = $continuationCompany;
+        $ended = false;
 
         foreach ($lines as $line) {
             $text = $line['text'];
@@ -562,8 +564,16 @@ class NOCWellExtractorWorkover
                 continue;
             }
 
+            if (
+                !$inRemarks
+                && $currentCompany !== null
+                && preg_match('/^\s*\d{1,2}\s*[.\-]\s*[^\/]+\/[^\/]+\/[^\/]+/u', $text)
+            ) {
+                $inRemarks = true;
+            }
+
             $company = $this->normalizeCompanyName($text, false);
-            if ($company !== null && ($inRemarks || in_array($company, ['HOG', 'MOG'], true))) {
+            if ($company !== null && ($inRemarks || in_array($company, ['Harouge Oil Operations', 'MOG'], true))) {
                 if ($current !== null && $currentCompany !== null) {
                     $entries[] = ['company' => $currentCompany, 'text' => $current];
                     $current = null;
@@ -582,6 +592,7 @@ class NOCWellExtractorWorkover
                 continue;
             }
             if (preg_match('/^Prepared\s+By:/i', $text)) {
+                $ended = true;
                 break;
             }
             if (preg_match('/^\s*(\d{1,2})\s*[\.\-]\s*(.+)$/u', $text, $match)) {
@@ -596,6 +607,8 @@ class NOCWellExtractorWorkover
         if ($current !== null && $currentCompany !== null) {
             $entries[] = ['company' => $currentCompany, 'text' => $current];
         }
+
+        $continuationCompany = $inRemarks && !$ended ? $currentCompany : null;
 
         $records = [];
         foreach ($entries as $entry) {
